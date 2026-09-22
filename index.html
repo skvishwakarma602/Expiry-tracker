@@ -1,0 +1,1912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Expiry Tracker Pro</title>
+    
+    <!-- Apple Web App Support & Custom Home Screen Icon -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Expiry Tracker">
+    <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><defs><linearGradient id='grad' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%231e1b4b'/><stop offset='100%' stop-color='%230f172a'/></linearGradient></defs><rect width='512' height='512' rx='112' fill='url(%23grad)'/><circle cx='256' cy='256' r='180' fill='%232dd4bf' fill-opacity='0.15'/><path d='M360 160H152c-17.7 0-32 14.3-32 32v200c0 17.7 14.3 32 32 32h208c17.7 0 32-14.3 32-32V192c0-17.7-14.3-32-32-32z' fill='none' stroke='%232dd4bf' stroke-width='32' stroke-linecap='round' stroke-linejoin='round'/><path d='M160 240h192M160 320h128' stroke='%232dd4bf' stroke-width='24' stroke-linecap='round'/><circle cx='350' cy='340' r='80' fill='%230f172a' stroke='%23f59e0b' stroke-width='20'/><path d='M350 290v50l35 25' fill='none' stroke='%23f59e0b' stroke-width='16' stroke-linecap='round'/></svg>">
+
+    <!-- Tailwind CSS & FontAwesome Icons -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- External Engines: html5-qrcode, jsPDF, jspdf-autotable, SheetJS -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <style>
+        body {
+            background: radial-gradient(circle at top right, #1e1b4b, #0f172a, #090d16);
+            color: #f8fafc;
+            font-family: system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.45);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        .scan-line {
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #ef4444, transparent);
+            position: absolute;
+            animation: scan 2s linear infinite;
+            z-index: 10;
+        }
+        @keyframes scan {
+            0% { top: 0%; }
+            50% { top: 100%; }
+            100% { top: 0%; }
+        }
+        .custom-scroll::-webkit-scrollbar {
+            height: 6px;
+            width: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 4px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, 0.4);
+            border-radius: 4px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: rgba(99, 102, 241, 0.7);
+        }
+        .snap-carousel {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            gap: 10px;
+        }
+        .snap-item {
+            scroll-snap-align: start;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body class="p-3 md:p-6 pb-28">
+
+    <!-- Top Branding & Report Options -->
+    <header class="max-w-6xl mx-auto mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+            <h1 class="text-3xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-indigo-400 flex items-center gap-2">
+                <i class="fa-solid fa-hourglass-half text-teal-400 text-2xl"></i> Smart Expiry Ledger Pro
+            </h1>
+            <p class="text-xs text-slate-400 mt-1">Excel Dmart 10% Formula & Ultra-HD 4K Photo Sharing Hub</p>
+        </div>
+        
+        <div class="flex flex-wrap gap-2 w-full sm:w-auto">
+            <!-- Full Mode Action Hub -->
+            <div class="flex items-center bg-slate-800/80 border border-slate-700 rounded-xl p-1 gap-1">
+                <span class="text-[10px] text-indigo-300 font-bold px-2 uppercase">Full Mode:</span>
+                <button onclick="shareWhatsAppDirect('full')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold hover:bg-slate-700 text-green-400 flex items-center gap-1">
+                    <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                </button>
+                <button onclick="downloadPDFDirect('full')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold hover:bg-slate-700 text-teal-400 flex items-center gap-1">
+                    <i class="fa-solid fa-file-pdf"></i> PDF
+                </button>
+                <button onclick="exportData('excel', 'full')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold hover:bg-slate-700 text-emerald-400 flex items-center gap-1">
+                    <i class="fa-solid fa-file-excel"></i> Excel
+                </button>
+            </div>
+
+            <!-- Quick Mode Action Hub -->
+            <div class="flex items-center bg-slate-800/80 border border-slate-700 rounded-xl p-1 gap-1">
+                <span class="text-[10px] text-teal-300 font-bold px-2 uppercase">Quick Mode:</span>
+                <button onclick="shareWhatsAppDirect('quick')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold hover:bg-slate-700 text-green-400 flex items-center gap-1">
+                    <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                </button>
+                <button onclick="downloadPDFDirect('quick')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold hover:bg-slate-700 text-teal-400 flex items-center gap-1">
+                    <i class="fa-solid fa-file-pdf"></i> PDF
+                </button>
+                <button onclick="exportData('excel', 'quick')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold hover:bg-slate-700 text-emerald-400 flex items-center gap-1">
+                    <i class="fa-solid fa-file-excel"></i> Excel
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Smart Alerts Notification Dashboard -->
+    <section class="max-w-6xl mx-auto mb-6 hidden space-y-2" id="notificationHubPanel">
+        <div class="text-xs font-bold text-rose-400 uppercase tracking-wider flex items-center gap-1.5 px-1">
+            <i class="fa-solid fa-bell animate-bounce"></i> Live Dmart Expiry & 10% Matrix Alerts
+        </div>
+        <div id="notificationAlertsContainer" class="space-y-2 max-h-40 overflow-y-auto pr-1"></div>
+    </section>
+
+    <!-- Stats Row Area -->
+    <section class="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+        <div onclick="setFilter('all')" class="glass-card p-4 rounded-2xl cursor-pointer border-l-4 border-blue-500 hover:scale-[1.02] transition">
+            <p class="text-xs text-slate-400 font-semibold tracking-wider uppercase">Total Mode Items</p>
+            <h3 class="text-2xl font-black mt-1" id="statTotal">0</h3>
+        </div>
+        <div onclick="setFilter('active')" class="glass-card p-4 rounded-2xl cursor-pointer border-l-4 border-emerald-500 hover:scale-[1.02] transition">
+            <p class="text-xs text-slate-400 font-semibold tracking-wider uppercase">Safe Phase</p>
+            <h3 class="text-2xl font-black mt-1 text-emerald-400" id="statActive">0</h3>
+        </div>
+        <div onclick="setFilter('warning')" class="glass-card p-4 rounded-2xl cursor-pointer border-l-4 border-amber-500 hover:scale-[1.02] transition">
+            <p class="text-xs text-slate-400 font-semibold tracking-wider uppercase">Warning Period</p>
+            <h3 class="text-2xl font-black mt-1 text-amber-400" id="statWarning">0</h3>
+        </div>
+        <div onclick="setFilter('expired')" class="glass-card p-4 rounded-2xl cursor-pointer border-l-4 border-red-500 hover:scale-[1.02] transition">
+            <p class="text-xs text-slate-400 font-semibold tracking-wider uppercase">Expired</p>
+            <h3 class="text-2xl font-black mt-1 text-red-400" id="statExpired">0</h3>
+        </div>
+    </section>
+
+    <!-- Main Workspace Layout -->
+    <main class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Left Panel: Switchable Sections -->
+        <div class="space-y-4">
+            
+            <div class="grid grid-cols-2 gap-2 p-1.5 glass-card rounded-2xl border border-slate-700">
+                <button onclick="switchWorkspaceMode('full')" id="tabBtnFull" class="py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 bg-indigo-600 text-white shadow-lg">
+                    <i class="fa-solid fa-list-check"></i> 1) Full Entry
+                </button>
+                <button onclick="switchWorkspaceMode('quick')" id="tabBtnQuick" class="py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 bg-transparent text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-bolt text-amber-400"></i> 2) Quick Entry
+                </button>
+            </div>
+
+            <!-- 1. FULL ENTRY MODE SECTION -->
+            <div id="fullEntrySection" class="glass-card p-5 rounded-3xl border border-indigo-500/20 shadow-lg relative">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-bold text-indigo-300 flex items-center gap-2" id="formHeaderTitle">
+                        <i class="fa-solid fa-circle-plus"></i> Full Entry Mode
+                    </h2>
+                    <span id="syncStatus" class="text-[10px] bg-slate-800 text-teal-400 px-2 py-1 rounded-full font-mono">Omni-Sync Active</span>
+                </div>
+
+                <!-- Scanner Container Box Area -->
+                <div class="relative w-full rounded-2xl overflow-hidden mb-4 bg-slate-950 hidden border border-indigo-500/50 shadow-inner flex flex-col items-center justify-center p-2" id="scannerContainer">
+                    <div class="w-full max-w-[280px] h-40 relative rounded-xl overflow-hidden border border-red-500/80 bg-black">
+                        <div id="interactiveScanner" class="w-full h-full"></div>
+                        <div class="scan-line"></div>
+                    </div>
+                    <div class="flex items-center justify-between w-full max-w-[280px] mt-2">
+                        <button id="torchToggleBtn" onclick="toggleFlashlight()" class="bg-amber-600/80 hover:bg-amber-700 text-white px-2.5 py-1 rounded-lg text-[10px] font-bold z-20 flex items-center gap-1 hidden">
+                            <i class="fa-solid fa-bolt"></i> Flashlight
+                        </button>
+                        <span class="text-[10px] text-amber-400 font-mono"><i class="fa-solid fa-barcode"></i> Align Barcode</span>
+                        <button onclick="stopScanner()" class="bg-red-600/80 hover:bg-red-700 text-white px-3 py-1 rounded-lg text-[10px] font-bold z-20">
+                            <i class="fa-solid fa-xmark mr-1"></i> Close
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Input Controls -->
+                <input type="hidden" id="formProductId">
+                <input type="hidden" id="formProductImgUrls" value="[]">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs text-slate-400 font-medium mb-1">Barcode (Type/Scan to Auto-Fetch)</label>
+                        <div class="flex gap-2">
+                            <div class="relative flex-1">
+                                <i class="fa-solid fa-barcode absolute left-3 top-3.5 text-slate-400 text-sm"></i>
+                                <input type="tel" id="formBarcode" placeholder="Numeric Barcode Only" 
+                                    inputmode="numeric" pattern="[0-9]*"
+                                    oninput="handleBarcodeTyping(this.value, 'full')"
+                                    class="w-full bg-slate-900/60 border border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:border-indigo-500 font-mono">
+                            </div>
+                            <button onclick="startScanner('full')" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 rounded-xl transition flex items-center justify-center">
+                                <i class="fa-solid fa-camera"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs text-slate-400 font-medium mb-1">Product Photos (Ultra-HD 4K Pristine)</label>
+                        <div class="flex gap-2">
+                            <label class="flex-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl px-3 py-2 text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer transition text-slate-300">
+                                <i class="fa-solid fa-images text-indigo-400"></i> Add HD Photos
+                                <input type="file" accept="image/*" multiple onchange="processCustomImageUpload(this, 'full')" class="hidden">
+                            </label>
+                            <label class="flex-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl px-3 py-2 text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer transition text-slate-300">
+                                <i class="fa-solid fa-camera-retro text-teal-400"></i> Capture Camera
+                                <input type="file" accept="image/*" capture="environment" onchange="processCustomImageUpload(this, 'full')" class="hidden">
+                            </label>
+                        </div>
+                    </div>
+
+                    <div id="formImagePreviewContainer" class="hidden space-y-2 bg-slate-900/60 p-2.5 rounded-xl border border-slate-700/80">
+                        <div class="flex items-center justify-between text-[11px] text-slate-400 font-medium">
+                            <span>Attached 4K Photos (<span id="photoCountBadge">0</span>) <span class="text-teal-400 font-mono text-[10px] ml-1">← Tap to Zoom/Rotate →</span></span>
+                            <button onclick="clearAllFormImages('full')" class="text-red-400 hover:text-red-500 text-xs">Remove All</button>
+                        </div>
+                        <div id="formImagesGrid" class="snap-carousel custom-scroll pb-2"></div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2 relative">
+                        <div class="col-span-2 relative">
+                            <label class="block text-xs text-slate-400 font-medium mb-1">Product Description/Name *</label>
+                            <input type="text" id="formName" autocomplete="off" placeholder="e.g. Parle Rusk" 
+                                oninput="handleNameTyping(this.value, 'full')"
+                                class="w-full bg-slate-900/60 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-500">
+                            
+                            <div id="suggestionDropdown" class="absolute left-0 right-0 top-[68px] bg-slate-950/95 border border-slate-700 rounded-xl mt-1 shadow-2xl z-50 max-h-56 overflow-y-auto hidden custom-scroll"></div>
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 font-medium mb-1">Weight *</label>
+                            <input type="text" id="formWeight" placeholder="e.g. 1kg" class="w-full bg-slate-900/60 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-500">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-xs text-slate-400 font-medium mb-1"><i class="fa-solid fa-calendar-plus text-teal-400 mr-1"></i>MFD Date *</label>
+                            <input type="date" id="formMfgDate" class="w-full bg-slate-900/60 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 font-medium mb-1"><i class="fa-solid fa-calendar-xmark text-red-400 mr-1"></i>Expiry Date *</label>
+                            <input type="date" id="formExpDate" class="w-full bg-slate-900/60 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-500">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-xs text-slate-400 font-medium mb-1">Notes (Optional)</label>
+                            <input type="text" id="formNotes" class="w-full bg-slate-900/60 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-500" placeholder="Batch details...">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 font-medium mb-1">Quantity (Optional)</label>
+                            <input type="text" id="formQuantity" class="w-full bg-slate-900/60 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-indigo-500" placeholder="e.g. 50">
+                        </div>
+                    </div>
+
+                    <div class="flex gap-2 pt-2">
+                        <button onclick="saveProduct('full')" class="flex-1 bg-gradient-to-r from-teal-500 to-indigo-600 hover:from-teal-400 hover:to-indigo-500 text-white font-bold py-2.5 rounded-xl transition shadow-lg">
+                            <i class="fa-solid fa-floppy-disk mr-2"></i> Save Product
+                        </button>
+                        <button onclick="resetEntryFormFields('full')" id="cancelEditBtn" class="hidden bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 rounded-xl transition text-xs font-bold">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. QUICK ENTRY SECTION -->
+            <div id="quickEntrySection" class="glass-card p-5 rounded-3xl border border-teal-500/30 shadow-lg relative bg-gradient-to-b from-slate-900/80 to-slate-950/40 hidden">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-bold text-teal-300 flex items-center gap-2">
+                        <i class="fa-solid fa-bolt text-amber-400 animate-pulse"></i> Quick Entry Section
+                    </h2>
+                    <span id="quickSyncStatus" class="text-[10px] bg-slate-800 text-amber-400 px-2 py-1 rounded-full font-mono">Fast Save</span>
+                </div>
+
+                <input type="hidden" id="quickProductImgUrls" value="[]">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs text-slate-400 font-medium mb-1">Barcode Scan (Optional)</label>
+                        <div class="flex gap-2">
+                            <div class="relative flex-1">
+                                <i class="fa-solid fa-barcode absolute left-3 top-3.5 text-slate-400 text-sm"></i>
+                                <input type="tel" id="quickBarcode" placeholder="Barcode" 
+                                    inputmode="numeric" pattern="[0-9]*"
+                                    oninput="handleBarcodeTyping(this.value, 'quick')"
+                                    class="w-full bg-slate-900/60 border border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:border-teal-500 font-mono">
+                            </div>
+                            <button onclick="startScanner('quick')" class="bg-teal-600 hover:bg-teal-500 text-white px-4 rounded-xl transition flex items-center justify-center">
+                                <i class="fa-solid fa-camera"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2 relative">
+                        <div class="col-span-2 relative">
+                            <label class="block text-xs text-slate-400 font-medium mb-1">Product Description/Name *</label>
+                            <input type="text" id="quickName" autocomplete="off" placeholder="e.g. Maggi Noodles" 
+                                oninput="handleNameTyping(this.value, 'quick')"
+                                class="w-full bg-slate-900/60 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-teal-500">
+                            
+                            <div id="quickSuggestionDropdown" class="absolute left-0 right-0 top-[68px] bg-slate-950/95 border border-slate-700 rounded-xl mt-1 shadow-2xl z-50 max-h-56 overflow-y-auto hidden custom-scroll"></div>
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 font-medium mb-1">Weight *</label>
+                            <input type="text" id="quickWeight" placeholder="70g" class="w-full bg-slate-900/60 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-teal-500">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-xs text-slate-400 font-medium mb-1"><i class="fa-solid fa-calendar-xmark text-red-400 mr-1"></i>Expiry Date *</label>
+                            <input type="date" id="quickExpDate" class="w-full bg-slate-900/60 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-teal-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-400 font-medium mb-1"><i class="fa-solid fa-bell text-amber-400 mr-1"></i>Alert Days</label>
+                            <input type="number" id="quickAlertDays" value="7" min="1" class="w-full bg-slate-900/60 border border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-teal-500">
+                        </div>
+                    </div>
+
+                    <button onclick="saveProduct('quick')" class="w-full bg-gradient-to-r from-amber-500 to-teal-600 hover:from-amber-400 hover:to-teal-500 text-white font-bold py-2.5 rounded-xl transition shadow-lg flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-bolt"></i> Fast Save Product
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right Panel: Grid Matrix -->
+        <div class="lg:col-span-2 space-y-4">
+            <div id="activeViewBanner" class="glass-card px-4 py-2.5 rounded-2xl flex flex-wrap items-center justify-between border-l-4 border-indigo-500 gap-2">
+                <div class="flex items-center gap-3">
+                    <span class="text-xs font-bold uppercase tracking-wider text-indigo-300" id="currentViewTitle"><i class="fa-solid fa-layer-group mr-1"></i> Showing: Full Entry Products</span>
+                    <button onclick="toggleSelectAllVisible()" id="selectAllBtn" class="text-[11px] bg-slate-800 hover:bg-slate-700 text-teal-300 px-2.5 py-1 rounded-lg font-semibold transition border border-slate-700">
+                        <i class="fa-regular fa-square-check mr-1"></i> Select All
+                    </button>
+                </div>
+                <span class="text-[10px] bg-slate-800 text-slate-300 px-2.5 py-1 rounded-full font-mono" id="currentViewCount">0 Items</span>
+            </div>
+
+            <div class="glass-card p-4 rounded-2xl flex flex-col sm:flex-row gap-3 items-center justify-between">
+                <div class="relative w-full sm:w-64">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-xs"></i>
+                    <input type="text" id="searchQuery" oninput="renderDashboard()" placeholder="Search Name or Barcode..." 
+                        class="w-full bg-slate-900/80 border border-slate-700 rounded-xl pl-9 pr-4 py-2 text-xs focus:outline-none focus:border-indigo-500">
+                </div>
+
+                <div class="flex flex-wrap gap-2 w-full sm:w-auto justify-end text-xs">
+                    <div class="flex items-center bg-slate-800 border border-slate-700 rounded-xl px-2 py-1.5">
+                        <span class="text-[10px] text-slate-400 mr-1.5 uppercase font-bold"><i class="fa-solid fa-arrow-down-short-wide text-indigo-400 mr-1"></i>Sort Engine:</span>
+                        <select id="sortBy" onchange="handleSortChange()" class="bg-transparent text-slate-200 focus:outline-none font-medium cursor-pointer">
+                            <option value="nearest">Expiry Days: Smallest to Largest</option>
+                            <option value="furthest">Expiry Days: Largest to Smallest</option>
+                            <option value="nameAsc">Alphabetical: A to Z</option>
+                            <option value="nameDesc">Alphabetical: Z to A</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="inventoryContainer"></div>
+            
+            <div id="emptyState" class="hidden text-center py-16 glass-card rounded-3xl">
+                <i class="fa-solid fa-folder-open text-slate-600 text-4xl mb-3"></i>
+                <p class="text-sm text-slate-400">No tracked products found matching query in this mode.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Floating Selection Action Bar (Multi-Selection Hub) -->
+    <div id="selectionActionBar" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-slate-950/95 border border-teal-500/50 backdrop-blur-xl px-5 py-3 rounded-2xl shadow-2xl z-40 hidden flex items-center gap-4 transition-all duration-300">
+        <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-teal-400 animate-ping"></span>
+            <span class="text-xs font-bold text-teal-300"><span id="selectedCountBadge">0</span> Selected Items</span>
+        </div>
+        <div class="h-5 w-[1px] bg-slate-800"></div>
+        <div class="flex items-center gap-2">
+            <button onclick="shareWhatsAppSelectedWithPhotos()" class="bg-green-600 hover:bg-green-500 text-white px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1 shadow transition">
+                <i class="fa-brands fa-whatsapp"></i> Share w/ Ultra-HD Photos
+            </button>
+            <button onclick="downloadPDFSelected()" class="bg-teal-600 hover:bg-teal-500 text-white px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1 shadow transition">
+                <i class="fa-solid fa-file-pdf"></i> PDF
+            </button>
+            <button onclick="exportDataSelected('excel')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1 shadow transition">
+                <i class="fa-solid fa-file-excel"></i> Excel
+            </button>
+            <button onclick="clearSelection()" class="text-slate-400 hover:text-white px-2 py-1 text-xs ml-1 bg-slate-900 rounded-lg border border-slate-800">
+                <i class="fa-solid fa-xmark"></i> Clear
+            </button>
+        </div>
+    </div>
+
+    <!-- Advanced Interactive Photo Gallery Modal Engine with Rotate Support -->
+    <div id="zoomModal" class="fixed inset-0 bg-black/95 z-50 hidden flex flex-col items-center justify-center p-4 transition-opacity duration-300" onclick="closeZoomPreview()">
+        <button class="absolute top-4 right-4 text-white/80 hover:text-white text-2xl p-3 bg-slate-900/80 rounded-full z-50">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        
+        <!-- Gallery Navigation Arrows -->
+        <button id="modalPrevBtn" onclick="event.stopPropagation(); changeGalleryIndex(-1)" class="absolute left-4 top-1/2 -translate-y-1/2 text-white bg-slate-800/80 hover:bg-teal-600 p-4 rounded-full text-xl z-50 shadow-xl transition">
+            <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <button id="modalNextBtn" onclick="event.stopPropagation(); changeGalleryIndex(1)" class="absolute right-4 top-1/2 -translate-y-1/2 text-white bg-slate-800/80 hover:bg-teal-600 p-4 rounded-full text-xl z-50 shadow-xl transition">
+            <i class="fa-solid fa-chevron-right"></i>
+        </button>
+
+        <div class="max-w-4xl w-full max-h-[85vh] overflow-hidden rounded-2xl border border-slate-800 shadow-2xl bg-slate-950 p-4 flex flex-col items-center justify-center relative" onclick="event.stopPropagation()">
+            <div class="relative w-full flex items-center justify-center overflow-hidden">
+                <img id="zoomModalImage" src="" class="max-w-full max-h-[68vh] object-contain select-none rounded-xl shadow-lg">
+            </div>
+
+            <!-- Rotate Button directly inside Zoom Modal -->
+            <button onclick="rotateGalleryImage()" class="mt-3 bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-lg flex items-center gap-2 transition z-50">
+                <i class="fa-solid fa-rotate-right"></i> Rotate 90° Clockwise
+            </button>
+
+            <div id="galleryCounter" class="mt-2 text-xs font-mono text-teal-300 bg-slate-900/90 px-3 py-1 rounded-full border border-slate-800"></div>
+        </div>
+    </div>
+
+    <script>
+        let products = [];
+        let selectedProductIds = [];
+        let lastRenderedProcessedList = [];
+        let html5QrcodeScanner = null;
+        let currentFilter = 'all';
+        let currentWorkspaceMode = 'full';
+        let barcodeDebounceTimer = null;
+        let nameDebounceTimer = null;
+        let activeScannerTarget = 'full';
+        let torchEnabled = false;
+
+        // Gallery Modal State with Product ID binding for live rotation persistence
+        let activeGalleryImages = [];
+        let currentGalleryIndex = 0;
+        let activeGalleryProductId = null;
+
+        function switchWorkspaceMode(mode) {
+            currentWorkspaceMode = mode;
+            selectedProductIds = [];
+            updateSelectionBarUI();
+
+            const fullSec = document.getElementById("fullEntrySection");
+            const quickSec = document.getElementById("quickEntrySection");
+            const btnFull = document.getElementById("tabBtnFull");
+            const btnQuick = document.getElementById("tabBtnQuick");
+            const banner = document.getElementById("activeViewBanner");
+            const viewTitle = document.getElementById("currentViewTitle");
+
+            if(mode === 'full') {
+                fullSec.classList.remove("hidden");
+                quickSec.classList.add("hidden");
+                btnFull.className = "py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 bg-indigo-600 text-white shadow-lg";
+                btnQuick.className = "py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 bg-transparent text-slate-400 hover:text-white";
+                banner.className = "glass-card px-4 py-2.5 rounded-2xl flex flex-wrap items-center justify-between border-l-4 border-indigo-500 gap-2";
+                viewTitle.innerHTML = `<i class="fa-solid fa-layer-group mr-1"></i> Showing: Full Entry Products`;
+            } else {
+                quickSec.classList.remove("hidden");
+                fullSec.classList.add("hidden");
+                btnQuick.className = "py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 bg-teal-600 text-white shadow-lg";
+                btnFull.className = "py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 bg-transparent text-slate-400 hover:text-white";
+                banner.className = "glass-card px-4 py-2.5 rounded-2xl flex flex-wrap items-center justify-between border-l-4 border-teal-500 gap-2";
+                viewTitle.innerHTML = `<i class="fa-solid fa-bolt mr-1 text-amber-400"></i> Showing: Quick Entry Products`;
+                stopScanner();
+            }
+            renderDashboard();
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const savedSort = localStorage.getItem('preferredSortOrder');
+            if (savedSort) {
+                const sortByElement = document.getElementById('sortBy');
+                if (sortByElement) sortByElement.value = savedSort;
+            }
+
+            loadFromBackupStorage();
+            setInterval(renderDashboard, 3600000); 
+            registerServiceWorker();
+
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('#formName') && !e.target.closest('#suggestionDropdown')) {
+                    document.getElementById('suggestionDropdown').classList.add('hidden');
+                }
+                if (!e.target.closest('#quickName') && !e.target.closest('#quickSuggestionDropdown')) {
+                    document.getElementById('quickSuggestionDropdown').classList.add('hidden');
+                }
+            });
+        })();
+
+        function handleSortChange() {
+            const sortByValue = document.getElementById('sortBy').value;
+            localStorage.setItem('preferredSortOrder', sortByValue);
+            renderDashboard();
+        }
+
+        function saveToBackupStorage() {
+            try {
+                localStorage.setItem("smart_expiry_storage_v10", JSON.stringify(products));
+            } catch (e) {
+                alert("Storage limit reached! Please delete old items or backup.");
+            }
+        }
+
+        function loadFromBackupStorage() {
+            const data = localStorage.getItem("smart_expiry_storage_v10") || localStorage.getItem("smart_expiry_storage_v9") || localStorage.getItem("smart_expiry_storage_v8");
+            products = data ? JSON.parse(data) : [];
+            renderDashboard();
+        }
+
+        function formatToIndianDateStr(dateObj) {
+            if (!dateObj || isNaN(dateObj.getTime())) return "N/A";
+            const day = String(dateObj.getDate()).padStart(2, '0');
+            const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const year = dateObj.getFullYear();
+            return `${day}-${month}-${year}`;
+        }
+
+        function formatToIndianDateTimeStr(dateInput) {
+            if (!dateInput) return "N/A";
+            const dateObj = new Date(dateInput);
+            if (isNaN(dateObj.getTime())) return "N/A";
+            const day = String(dateObj.getDate()).padStart(2, '0');
+            const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const year = dateObj.getFullYear();
+            let hours = dateObj.getHours();
+            const minutes = String(dateObj.getMinutes()).padStart(2, '0');
+            const seconds = String(dateObj.getSeconds()).padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; 
+            const strHours = String(hours).padStart(2, '0');
+            return `${day}-${month}-${year} ${strHours}:${minutes}:${seconds} ${ampm}`;
+        }
+
+        function computeShelfLifeMetrics(mfgStr, expStr, mode = 'full', customAlertDays = 7) {
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            
+            const exp = expStr ? new Date(expStr) : new Date(today);
+            exp.setHours(0,0,0,0);
+
+            const remainingDays = Math.round((exp - today) / (1000 * 60 * 60 * 24));
+            
+            let totalShelfLife = 0;
+            let selfLifePct = 0;
+            let completePct = 0;
+            let dmartDay10 = 0;
+            let dmartRemDay10 = 0;
+            let dmartExpDateStr = "N/A";
+            let dmart10RemDay = 0;
+            let dmartSelfLife10RemPct = 0;
+            let dmartSelfLife10CompPct = 0;
+            let rawMfgStr = "N/A";
+
+            if (mode === 'full' && mfgStr) {
+                const mfg = new Date(mfgStr);
+                mfg.setHours(0,0,0,0);
+                
+                totalShelfLife = Math.max(1, Math.round((exp - mfg) / (1000 * 60 * 60 * 24)));
+                const remRatio = Math.max(0, Math.min(1, remainingDays / totalShelfLife));
+                selfLifePct = parseFloat((remRatio * 100).toFixed(1));
+                completePct = parseFloat(((1 - remRatio) * 100).toFixed(1));
+                
+                dmartDay10 = totalShelfLife * 0.10;
+                dmartRemDay10 = totalShelfLife - dmartDay10;
+                
+                const dmartExpObj = new Date(exp.getTime() - (dmartDay10 * 24 * 60 * 60 * 1000));
+                dmartExpDateStr = formatToIndianDateStr(dmartExpObj);
+                
+                dmart10RemDay = Math.round((dmartExpObj - today) / (1000 * 60 * 60 * 24));
+                
+                const dmartRemRatio = dmartRemDay10 > 0 ? Math.max(0, Math.min(1, dmart10RemDay / dmartRemDay10)) : 0;
+                dmartSelfLife10RemPct = parseFloat((dmartRemRatio * 100).toFixed(1));
+                dmartSelfLife10CompPct = parseFloat(((1 - dmartRemRatio) * 100).toFixed(1));
+                
+                rawMfgStr = formatToIndianDateStr(mfg);
+            } else {
+                totalShelfLife = customAlertDays * 10;
+                const remRatio = Math.max(0, Math.min(1, remainingDays / totalShelfLife));
+                selfLifePct = parseFloat((remRatio * 100).toFixed(1));
+                completePct = parseFloat(((1 - remRatio) * 100).toFixed(1));
+                
+                dmartDay10 = customAlertDays;
+                dmartRemDay10 = totalShelfLife - dmartDay10;
+                
+                const dmartExpObj = new Date(exp.getTime() - (dmartDay10 * 24 * 60 * 60 * 1000));
+                dmartExpDateStr = formatToIndianDateStr(dmartExpObj);
+                
+                dmart10RemDay = Math.round((dmartExpObj - today) / (1000 * 60 * 60 * 24));
+                
+                const dmartRemRatio = dmartRemDay10 > 0 ? Math.max(0, Math.min(1, dmart10RemDay / dmartRemDay10)) : 0;
+                dmartSelfLife10RemPct = parseFloat((dmartRemRatio * 100).toFixed(1));
+                dmartSelfLife10CompPct = parseFloat(((1 - dmartRemRatio) * 100).toFixed(1));
+            }
+
+            return {
+                totalShelfLife: totalShelfLife + " Days",
+                totalShelfLifeNum: totalShelfLife,
+                todayStr: formatToIndianDateStr(today),
+                remainingDays,
+                selfLifePct,
+                completePct,
+                dmartDay10: dmartDay10.toFixed(1) + " Days",
+                dmartRemDay10: dmartRemDay10.toFixed(1) + " Days",
+                dmartExpDateStr,
+                dmart10RemDay,
+                dmartSelfLife10RemPct,
+                dmartSelfLife10CompPct,
+                rawMfgStr,
+                rawExpStr: formatToIndianDateStr(exp)
+            };
+        }
+
+        // Multi-Selection Logic
+        function toggleProductSelection(id) {
+            const index = selectedProductIds.indexOf(id);
+            if (index > -1) {
+                selectedProductIds.splice(index, 1);
+            } else {
+                selectedProductIds.push(id);
+            }
+            updateSelectionBarUI();
+        }
+
+        function toggleSelectAllVisible() {
+            const visibleIds = lastRenderedProcessedList.map(p => p.id);
+            const allSelected = visibleIds.length > 0 && visibleIds.every(id => selectedProductIds.includes(id));
+            
+            if (allSelected) {
+                selectedProductIds = selectedProductIds.filter(id => !visibleIds.includes(id));
+            } else {
+                visibleIds.forEach(id => {
+                    if (!selectedProductIds.includes(id)) selectedProductIds.push(id);
+                });
+            }
+            renderDashboard();
+        }
+
+        function clearSelection() {
+            selectedProductIds = [];
+            renderDashboard();
+        }
+
+        function updateSelectionBarUI() {
+            const bar = document.getElementById("selectionActionBar");
+            const badge = document.getElementById("selectedCountBadge");
+            if (selectedProductIds.length > 0) {
+                bar.classList.remove("hidden");
+                badge.innerText = selectedProductIds.length;
+            } else {
+                bar.classList.add("hidden");
+            }
+        }
+
+        function handleBarcodeTyping(value, target) {
+            const cleaned = value.replace(/[^0-9]/g, '');
+            if (target === 'full') {
+                document.getElementById("formBarcode").value = cleaned;
+            } else {
+                document.getElementById("quickBarcode").value = cleaned;
+            }
+            
+            clearTimeout(barcodeDebounceTimer);
+            if(cleaned.length >= 8) {
+                barcodeDebounceTimer = setTimeout(() => {
+                    lookupBarcode(cleaned, target);
+                }, 600);
+            }
+        }
+
+        async function lookupBarcode(barcodeString, target) {
+            const barcode = barcodeString;
+            if (!barcode) return;
+            
+            const syncStatusId = target === 'full' ? "syncStatus" : "quickSyncStatus";
+            document.getElementById(syncStatusId).innerText = "Auto-Fetching...";
+
+            const localMatch = products.find(x => x.barcode === barcode && x.name);
+            if (localMatch) {
+                if (target === 'full') {
+                    document.getElementById("formName").value = localMatch.name;
+                    document.getElementById("formWeight").value = localMatch.weight || "";
+                    if(localMatch.imgUrls && localMatch.imgUrls.length > 0) {
+                        let existingUrls = [];
+                        try { existingUrls = JSON.parse(document.getElementById("formProductImgUrls").value || "[]"); } catch(e){}
+                        if(existingUrls.length === 0) {
+                            document.getElementById("formProductImgUrls").value = JSON.stringify(localMatch.imgUrls);
+                            renderFormImagePreviews(localMatch.imgUrls);
+                        }
+                    }
+                } else {
+                    document.getElementById("quickName").value = localMatch.name;
+                    document.getElementById("quickWeight").value = localMatch.weight || "";
+                }
+                document.getElementById(syncStatusId).innerText = "Memory Sync Success";
+                return;
+            }
+            
+            try {
+                let offResponse = await fetch(`https://world.openfoodfacts.org/api/v2/product/${barcode}.json`);
+                let offData = await offResponse.json();
+                
+                if (offData.status === 1 && offData.product) {
+                    const p = offData.product;
+                    const fetchedName = p.product_name || p.product_name_en || p.generic_name || "";
+                    const fetchedWeight = p.quantity || p.product_quantity_string || "";
+                    const imgUrl = p.image_front_url || p.image_url || "";
+
+                    if (target === 'full') {
+                        document.getElementById("formName").value = fetchedName;
+                        document.getElementById("formWeight").value = fetchedWeight;
+                        if(imgUrl) {
+                            let existingUrls = [];
+                            try { existingUrls = JSON.parse(document.getElementById("formProductImgUrls").value || "[]"); } catch(e){}
+                            if (existingUrls.length === 0) {
+                                let urls = [imgUrl];
+                                document.getElementById("formProductImgUrls").value = JSON.stringify(urls);
+                                renderFormImagePreviews(urls);
+                            }
+                        }
+                    } else {
+                        document.getElementById("quickName").value = fetchedName;
+                        document.getElementById("quickWeight").value = fetchedWeight;
+                    }
+                    document.getElementById(syncStatusId).innerText = "Barcode Sync Success";
+                    return;
+                }
+                document.getElementById(syncStatusId).innerText = "Not Found Globally";
+            } catch (err) {
+                document.getElementById(syncStatusId).innerText = "Lookup Error";
+            }
+        }
+
+        function handleNameTyping(value, target) {
+            clearTimeout(nameDebounceTimer);
+            const dropdownId = target === 'full' ? "suggestionDropdown" : "quickSuggestionDropdown";
+            const dropdown = document.getElementById(dropdownId);
+            
+            if (value.trim().length < 2) {
+                dropdown.classList.add("hidden");
+                return;
+            }
+
+            nameDebounceTimer = setTimeout(() => {
+                fetchOnlineProductSuggestions(value.trim(), target);
+            }, 400);
+        }
+
+        async function fetchOnlineProductSuggestions(query, target) {
+            const syncStatusId = target === 'full' ? "syncStatus" : "quickSyncStatus";
+            const dropdownId = target === 'full' ? "suggestionDropdown" : "quickSuggestionDropdown";
+            const dropdown = document.getElementById(dropdownId);
+            
+            document.getElementById(syncStatusId).innerText = "Searching Online...";
+
+            try {
+                let response = await fetch(`https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&search_simple=1&action=process&json=1&page_size=8`);
+                let data = await response.json();
+                
+                let onlineSuggestions = [];
+                if (data && data.products) {
+                    data.products.forEach(p => {
+                        const name = p.product_name || p.product_name_en || p.generic_name;
+                        if (name) {
+                            onlineSuggestions.push({
+                                name: name,
+                                weight: p.quantity || p.product_quantity_string || "N/A",
+                                code: p.code || "N/A",
+                                imgUrl: p.image_front_url || p.image_url || ""
+                            });
+                        }
+                    });
+                }
+
+                const lowerQuery = query.toLowerCase();
+                products.forEach(item => {
+                    if (item.name && item.name.toLowerCase().includes(lowerQuery)) {
+                        onlineSuggestions.unshift({
+                            name: item.name,
+                            weight: item.weight || "N/A",
+                            code: item.barcode || "N/A",
+                            imgUrls: item.imgUrls || []
+                        });
+                    }
+                });
+
+                const uniqueMap = new Map();
+                onlineSuggestions.forEach(item => {
+                    if(!uniqueMap.has(item.name.toLowerCase())) {
+                        uniqueMap.set(item.name.toLowerCase(), item);
+                    }
+                });
+                const finalSuggestions = Array.from(uniqueMap.values()).slice(0, 8);
+
+                if (finalSuggestions.length > 0) {
+                    dropdown.innerHTML = "";
+                    dropdown.classList.remove("hidden");
+                    
+                    finalSuggestions.forEach(p => {
+                        const row = document.createElement('div');
+                        row.className = "flex items-center gap-3 p-2.5 hover:bg-indigo-900/60 cursor-pointer border-b border-slate-800/60 transition text-xs";
+                        
+                        const displayImg = p.imgUrl || (p.imgUrls && p.imgUrls[0]) || "";
+                        const imgHtml = displayImg 
+                            ? `<img src="${displayImg}" class="w-8 h-8 object-cover rounded bg-slate-800 shrink-0">`
+                            : `<div class="w-8 h-8 rounded bg-slate-900 flex items-center justify-center text-slate-500 shrink-0"><i class="fa-solid fa-box text-[10px]"></i></div>`;
+                            
+                        row.innerHTML = `
+                            ${imgHtml}
+                            <div class="min-w-0 flex-1">
+                                <div class="font-bold text-slate-200 truncate">${p.name} <span class="text-teal-400 font-semibold">(${p.weight})</span></div>
+                                <div class="text-[10px] text-slate-400 font-mono truncate">Code: ${p.code}</div>
+                            </div>
+                        `;
+                        
+                        row.onclick = () => selectProductFromSuggestion(p.name, p.weight, p.code, displayImg ? [displayImg] : [], target);
+                        dropdown.appendChild(row);
+                    });
+                    document.getElementById(syncStatusId).innerText = "Online Suggestions Ready";
+                } else {
+                    dropdown.classList.add("hidden");
+                    document.getElementById(syncStatusId).innerText = "No Online Matches";
+                }
+            } catch (err) {
+                document.getElementById(syncStatusId).innerText = "Fetch Error";
+                dropdown.classList.add("hidden");
+            }
+        }
+
+        function selectProductFromSuggestion(name, weight, barcode, imgUrls, target) {
+            if (target === 'full') {
+                document.getElementById("formName").value = name;
+                document.getElementById("formWeight").value = weight !== "N/A" ? weight : '';
+                document.getElementById("formBarcode").value = barcode !== "N/A" ? barcode : '';
+                
+                let existingUrls = [];
+                try { existingUrls = JSON.parse(document.getElementById("formProductImgUrls").value || "[]"); } catch(e){}
+                if (existingUrls.length === 0 && imgUrls && imgUrls.length > 0) {
+                    document.getElementById("formProductImgUrls").value = JSON.stringify(imgUrls);
+                    renderFormImagePreviews(imgUrls);
+                }
+                
+                document.getElementById("suggestionDropdown").classList.add("hidden");
+            }
+        }
+
+        // ULTRA-HD 4K CRYSTAL CLEAR PHOTO PROCESSOR (4096px, 100% Quality)
+        function processCustomImageUpload(input, target) {
+            if (input.files && input.files.length > 0) {
+                let existingUrls = [];
+                try {
+                    existingUrls = JSON.parse(document.getElementById("formProductImgUrls").value || "[]");
+                } catch(e) {}
+
+                let filesProcessed = 0;
+                Array.from(input.files).forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = new Image();
+                        img.src = e.target.result;
+                        img.onload = function() {
+                            const canvas = document.createElement('canvas');
+                            const MAX_WIDTH = 4096;  // 4K Ultra-HD Width
+                            const MAX_HEIGHT = 4096; // 4K Ultra-HD Height
+                            let width = img.width;
+                            let height = img.height;
+
+                            if (width > height) {
+                                if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+                            } else {
+                                if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
+                            }
+
+                            canvas.width = width;
+                            canvas.height = height;
+                            const ctx = canvas.getContext('2d');
+                            ctx.drawImage(img, 0, 0, width, height);
+                            
+                            const compressedBase64 = canvas.toDataURL('image/jpeg', 1.0); // 100% Ultra-HD Maximum Quality
+                            existingUrls.push(compressedBase64);
+                            filesProcessed++;
+
+                            if (filesProcessed === input.files.length) {
+                                document.getElementById("formProductImgUrls").value = JSON.stringify(existingUrls);
+                                renderFormImagePreviews(existingUrls);
+                            }
+                        };
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+        }
+
+        function renderFormImagePreviews(urls) {
+            const container = document.getElementById("formImagePreviewContainer");
+            const grid = document.getElementById("formImagesGrid");
+            const badge = document.getElementById("photoCountBadge");
+            
+            grid.innerHTML = "";
+            if(!urls || urls.length === 0) {
+                container.classList.add("hidden");
+                return;
+            }
+
+            container.classList.remove("hidden");
+            badge.innerText = urls.length;
+
+            urls.forEach((url, idx) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = "relative shrink-0 snap-item group";
+                itemDiv.innerHTML = `
+                    <div class="relative">
+                        <img src="${url}" class="w-16 h-16 object-cover rounded-xl border border-indigo-500/50 shadow-md cursor-pointer hover:scale-105 transition" onclick='triggerGalleryModal(${JSON.stringify(urls)}, ${idx}, null)'>
+                        <span class="absolute bottom-1 left-1 bg-black/75 text-teal-300 text-[9px] font-mono px-1.5 py-0.5 rounded">${idx + 1}/${urls.length}</span>
+                    </div>
+                    <!-- Rotate Button -->
+                    <button onclick="rotateFormImage(${idx})" class="absolute -top-1.5 left-1 bg-indigo-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] shadow hover:bg-indigo-500 z-10" title="Rotate 90°"><i class="fa-solid fa-rotate-right"></i></button>
+                    <!-- Remove Button -->
+                    <button onclick="removeSingleFormImage(${idx})" class="absolute -top-1.5 -right-1.5 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] shadow hover:bg-red-500 z-10" title="Delete"><i class="fa-solid fa-xmark"></i></button>
+                `;
+                grid.appendChild(itemDiv);
+            });
+        }
+
+        function rotateFormImage(index) {
+            try {
+                let urls = JSON.parse(document.getElementById("formProductImgUrls").value || "[]");
+                const imgUrl = urls[index];
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.height;
+                    canvas.height = img.width;
+                    const ctx = canvas.getContext('2d');
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.translate(canvas.width / 2, canvas.height / 2);
+                    ctx.rotate(90 * Math.PI / 180);
+                    ctx.drawImage(img, -img.width / 2, -img.height / 2);
+                    
+                    urls[index] = canvas.toDataURL('image/jpeg', 1.0);
+                    document.getElementById("formProductImgUrls").value = JSON.stringify(urls);
+                    renderFormImagePreviews(urls);
+                };
+                img.src = imgUrl;
+            } catch(e) {}
+        }
+
+        function removeSingleFormImage(index) {
+            try {
+                let urls = JSON.parse(document.getElementById("formProductImgUrls").value || "[]");
+                urls.splice(index, 1);
+                document.getElementById("formProductImgUrls").value = JSON.stringify(urls);
+                renderFormImagePreviews(urls);
+            } catch(e) {}
+        }
+
+        function clearAllFormImages(target) {
+            document.getElementById("formProductImgUrls").value = "[]";
+            renderFormImagePreviews([]);
+        }
+
+        // Advanced Interactive Gallery Modal Engine with Rotate Support
+        function triggerGalleryModal(urls, index = 0, productId = null) {
+            if(!urls || urls.length === 0) return;
+            activeGalleryImages = [...urls];
+            currentGalleryIndex = index;
+            activeGalleryProductId = productId;
+            updateGalleryModalView();
+            document.getElementById("zoomModal").classList.remove("hidden");
+        }
+
+        function changeGalleryIndex(direction) {
+            currentGalleryIndex += direction;
+            if(currentGalleryIndex < 0) {
+                currentGalleryIndex = activeGalleryImages.length - 1;
+            } else if(currentGalleryIndex >= activeGalleryImages.length) {
+                currentGalleryIndex = 0;
+            }
+            updateGalleryModalView();
+        }
+
+        function updateGalleryModalView() {
+            const img = document.getElementById("zoomModalImage");
+            const counter = document.getElementById("galleryCounter");
+            const prevBtn = document.getElementById("modalPrevBtn");
+            const nextBtn = document.getElementById("modalNextBtn");
+
+            img.src = activeGalleryImages[currentGalleryIndex];
+            counter.innerText = `Photo ${currentGalleryIndex + 1} of ${activeGalleryImages.length}`;
+
+            if(activeGalleryImages.length > 1) {
+                prevBtn.classList.remove("hidden");
+                nextBtn.classList.remove("hidden");
+            } else {
+                prevBtn.classList.add("hidden");
+                nextBtn.classList.add("hidden");
+            }
+        }
+
+        // Rotate Image inside Zoom / Gallery Modal and save everywhere at 100% Ultra-HD quality
+        function rotateGalleryImage() {
+            if(activeGalleryImages.length === 0) return;
+            const imgUrl = activeGalleryImages[currentGalleryIndex];
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.height;
+                canvas.height = img.width;
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.translate(canvas.width / 2, canvas.height / 2);
+                ctx.rotate(90 * Math.PI / 180);
+                ctx.drawImage(img, -img.width / 2, -img.height / 2);
+                
+                const rotatedBase64 = canvas.toDataURL('image/jpeg', 1.0);
+                activeGalleryImages[currentGalleryIndex] = rotatedBase64;
+                updateGalleryModalView();
+
+                if(activeGalleryProductId) {
+                    const prod = products.find(p => p.id === activeGalleryProductId);
+                    if(prod) {
+                        if(prod.imgUrls) {
+                            prod.imgUrls[currentGalleryIndex] = rotatedBase64;
+                        } else if(prod.imgUrl) {
+                            prod.imgUrl = rotatedBase64;
+                        }
+                        prod.updatedAt = new Date().toISOString();
+                        saveToBackupStorage();
+                        renderDashboard();
+                    }
+                } else {
+                    try {
+                        let formUrls = JSON.parse(document.getElementById("formProductImgUrls").value || "[]");
+                        if(formUrls.length > 0) {
+                            formUrls[currentGalleryIndex] = rotatedBase64;
+                            document.getElementById("formProductImgUrls").value = JSON.stringify(formUrls);
+                            renderFormImagePreviews(formUrls);
+                        }
+                    } catch(e) {}
+                }
+            };
+            img.src = imgUrl;
+        }
+
+        function closeZoomPreview() {
+            document.getElementById("zoomModal").classList.add("hidden");
+        }
+
+        function saveProduct(mode = 'full') {
+            let record = {};
+            const currentTimestamp = new Date().toISOString();
+            
+            if (mode === 'full') {
+                const id = document.getElementById("formProductId").value.trim();
+                const barcode = document.getElementById("formBarcode").value.trim();
+                const name = document.getElementById("formName").value.trim();
+                const weight = document.getElementById("formWeight").value.trim();
+                const mfg = document.getElementById("formMfgDate").value; 
+                const exp = document.getElementById("formExpDate").value; 
+                const notes = document.getElementById("formNotes").value.trim();
+                const quantity = document.getElementById("formQuantity").value.trim();
+                
+                let imgUrls = [];
+                try {
+                    imgUrls = JSON.parse(document.getElementById("formProductImgUrls").value || "[]");
+                } catch(e) {}
+
+                if (!name || !mfg || !exp) {
+                    alert("Please fill out Description, MFD Date, and Expiry Date.");
+                    return;
+                }
+                
+                if(id) {
+                    const index = products.findIndex(x => x.id === id);
+                    if(index > -1) {
+                        const existing = products[index];
+                        record = {
+                            ...existing,
+                            barcode, name, weight: weight || "N/A", mfgDate: mfg, expDate: exp, notes, quantity, imgUrls, mode: 'full',
+                            updatedAt: currentTimestamp
+                        };
+                        products[index] = record;
+                    }
+                } else {
+                    record = { 
+                        id: Date.now().toString(), 
+                        barcode, name, weight: weight || "N/A", mfgDate: mfg, expDate: exp, notes, quantity, imgUrls, mode: 'full',
+                        createdAt: currentTimestamp,
+                        updatedAt: currentTimestamp
+                    };
+                    products.push(record);
+                }
+                resetEntryFormFields('full');
+            } else {
+                const barcode = document.getElementById("quickBarcode").value.trim();
+                const name = document.getElementById("quickName").value.trim();
+                const weight = document.getElementById("quickWeight").value.trim();
+                const exp = document.getElementById("quickExpDate").value;
+                const alertDays = parseInt(document.getElementById("quickAlertDays").value) || 7;
+
+                if (!name || !exp) {
+                    alert("Please fill out Name and Expiry Date.");
+                    return;
+                }
+
+                record = { 
+                    id: Date.now().toString(), 
+                    barcode, name, weight: weight || "N/A", mfgDate: null, expDate: exp, notes: "Quick Saved", quantity: "", imgUrls: [], mode: 'quick', alertDays: alertDays,
+                    createdAt: currentTimestamp,
+                    updatedAt: currentTimestamp
+                };
+                products.push(record);
+                resetEntryFormFields('quick');
+            }
+
+            saveToBackupStorage();
+            renderDashboard();
+        }
+
+        function editProduct(id) {
+            const item = products.find(x => x.id === id);
+            if(!item) return;
+
+            switchWorkspaceMode(item.mode || 'full');
+
+            if(item.mode === 'quick') {
+                document.getElementById("quickBarcode").value = item.barcode || "";
+                document.getElementById("quickName").value = item.name;
+                document.getElementById("quickWeight").value = item.weight || "";
+                document.getElementById("quickExpDate").value = item.expDate;
+                document.getElementById("quickAlertDays").value = item.alertDays || 7;
+            } else {
+                document.getElementById("formProductId").value = item.id;
+                document.getElementById("formBarcode").value = item.barcode || "";
+                document.getElementById("formName").value = item.name;
+                document.getElementById("formWeight").value = item.weight || "";
+                document.getElementById("formMfgDate").value = item.mfgDate || "";
+                document.getElementById("formExpDate").value = item.expDate;
+                document.getElementById("formNotes").value = item.notes || "";
+                document.getElementById("formQuantity").value = item.quantity || "";
+                
+                const urls = item.imgUrls || (item.imgUrl ? [item.imgUrl] : []);
+                document.getElementById("formProductImgUrls").value = JSON.stringify(urls);
+                renderFormImagePreviews(urls);
+
+                document.getElementById("formHeaderTitle").innerHTML = `<i class="fa-solid fa-pen-to-square text-amber-400"></i> Edit Product`;
+                document.getElementById("cancelEditBtn").classList.remove("hidden");
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function resetEntryFormFields(target = 'full') {
+            if (target === 'full') {
+                document.getElementById("formProductId").value = "";
+                document.getElementById("formBarcode").value = "";
+                document.getElementById("formName").value = "";
+                document.getElementById("formWeight").value = "";
+                document.getElementById("formMfgDate").value = "";
+                document.getElementById("formExpDate").value = "";
+                document.getElementById("formNotes").value = "";
+                document.getElementById("formQuantity").value = "";
+                document.getElementById("formProductImgUrls").value = "[]";
+                renderFormImagePreviews([]);
+                document.getElementById("formHeaderTitle").innerHTML = `<i class="fa-solid fa-circle-plus"></i> Full Entry Mode`;
+                document.getElementById("cancelEditBtn").classList.add("hidden");
+                document.getElementById("suggestionDropdown").classList.add("hidden");
+            } else {
+                document.getElementById("quickBarcode").value = "";
+                document.getElementById("quickName").value = "";
+                document.getElementById("quickWeight").value = "";
+                document.getElementById("quickExpDate").value = "";
+                document.getElementById("quickAlertDays").value = "7";
+                document.getElementById("quickSuggestionDropdown").classList.add("hidden");
+            }
+        }
+
+        function renderDashboard() {
+            const container = document.getElementById("inventoryContainer");
+            const searchQuery = document.getElementById("searchQuery").value.toLowerCase();
+            const sortBy = document.getElementById("sortBy").value;
+            
+            const notifyPanel = document.getElementById("notificationHubPanel");
+            const notifyContainer = document.getElementById("notificationAlertsContainer");
+            
+            container.innerHTML = "";
+            notifyContainer.innerHTML = "";
+            
+            let total = 0, active = 0, warning = 0, expired = 0;
+            let currentNotifications = [];
+
+            let modeFilteredProducts = products.filter(item => {
+                const itemMode = item.mode || 'full';
+                return itemMode === currentWorkspaceMode;
+            });
+
+            document.getElementById("currentViewCount").innerText = `${modeFilteredProducts.length} Items`;
+
+            let processed = modeFilteredProducts.map(item => {
+                const m = computeShelfLifeMetrics(item.mfgDate, item.expDate, item.mode, item.alertDays);
+                let status = "SAFE";
+                let colorClass = "bg-emerald-500/10 text-emerald-400 border-emerald-500/30";
+                
+                if (m.remainingDays <= 0) {
+                    status = "EXPIRED";
+                    colorClass = "bg-red-500/10 text-red-400 border-red-500/30";
+                    expired++;
+                    currentNotifications.push({ name: item.name + ` (${item.weight || 'N/A'})`, text: "poori tarah EXPIRE ho chuka hai!", alertType: "danger" });
+                } else if (m.dmart10RemDay <= 7) {
+                    status = "WARNING";
+                    colorClass = "bg-amber-500/10 text-amber-400 border-amber-500/30";
+                    warning++;
+                    currentNotifications.push({ name: item.name + ` (${item.weight || 'N/A'})`, text: "Dmart 10% Shelf Life zone mein aa chuka hai!", alertType: "alert" });
+                } else {
+                    active++;
+                }
+                total++;
+
+                return { ...item, metrics: m, status, colorClass };
+            });
+
+            if (currentNotifications.length > 0) {
+                notifyPanel.classList.remove("hidden");
+                currentNotifications.forEach(n => {
+                    let cardBg = "bg-blue-950/40 border-blue-900/60 text-blue-300";
+                    let icon = '<i class="fa-solid fa-circle-info text-blue-400"></i>';
+                    
+                    if(n.alertType === "danger") {
+                        cardBg = "bg-red-950/40 border-red-900/60 text-red-300";
+                        icon = '<i class="fa-solid fa-circle-exclamation text-red-400 animate-pulse"></i>';
+                    } else if(n.alertType === "alert") {
+                        cardBg = "bg-amber-950/40 border-amber-900/60 text-amber-300";
+                        icon = '<i class="fa-solid fa-triangle-exclamation text-amber-400"></i>';
+                    }
+                    
+                    notifyContainer.insertAdjacentHTML('beforeend', `
+                        <div class="glass-card p-3 rounded-xl border flex items-center gap-2.5 text-xs font-medium ${cardBg}">
+                            ${icon} <span><strong>${n.name}</strong> ${n.text}</span>
+                        </div>
+                    `);
+                });
+            } else {
+                notifyPanel.classList.add("hidden");
+            }
+
+            document.getElementById("statTotal").innerText = total;
+            document.getElementById("statActive").innerText = active;
+            document.getElementById("statWarning").innerText = warning;
+            document.getElementById("statExpired").innerText = expired;
+
+            if (currentFilter === 'active') processed = processed.filter(x => x.status === 'SAFE');
+            if (currentFilter === 'warning') processed = processed.filter(x => x.status === 'WARNING');
+            if (currentFilter === 'expired') processed = processed.filter(x => x.status === 'EXPIRED');
+
+            if(searchQuery) {
+                processed = processed.filter(x => 
+                    x.name.toLowerCase().includes(searchQuery) || 
+                    (x.weight && x.weight.toLowerCase().includes(searchQuery)) ||
+                    (x.barcode && x.barcode.includes(searchQuery))
+                );
+            }
+
+            if(sortBy === "nearest") {
+                processed.sort((a,b) => a.metrics.remainingDays - b.metrics.remainingDays);
+            } else if(sortBy === "furthest") {
+                processed.sort((a,b) => b.metrics.remainingDays - a.metrics.remainingDays);
+            } else if(sortBy === "nameAsc") {
+                processed.sort((a,b) => a.name.localeCompare(b.name));
+            } else if(sortBy === "nameDesc") {
+                processed.sort((a,b) => b.name.localeCompare(a.name));
+            }
+
+            lastRenderedProcessedList = processed;
+
+            if(processed.length === 0) {
+                document.getElementById("emptyState").classList.remove("hidden");
+                updateSelectionBarUI();
+                return;
+            }
+            document.getElementById("emptyState").classList.add("hidden");
+
+            processed.forEach(item => {
+                const isSelected = selectedProductIds.includes(item.id);
+                const urls = item.imgUrls || (item.imgUrl ? [item.imgUrl] : []);
+                let imagesHtml = '';
+                if(urls.length > 0) {
+                    imagesHtml = `<div class="snap-carousel custom-scroll py-1 max-w-[190px] sm:max-w-[240px]">` + 
+                        urls.map((u, i) => `
+                            <div class="relative shrink-0 snap-item">
+                                <img src="${u}" class="w-14 h-14 object-cover rounded-xl border border-slate-700 shadow-inner cursor-pointer hover:scale-105 transition" onclick='triggerGalleryModal(${JSON.stringify(urls)}, ${i}, "${item.id}")'>
+                                <span class="absolute bottom-0.5 right-0.5 bg-black/80 text-teal-300 text-[8px] font-mono px-1 rounded">${i+1}/${urls.length}</span>
+                            </div>
+                        `).join('') + 
+                    `</div>`;
+                } else {
+                    imagesHtml = `<div class="w-14 h-14 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-500 shrink-0"><i class="fa-solid fa-box-open text-sm"></i></div>`;
+                }
+
+                const badgeHtml = item.mode === 'quick' 
+                    ? `<span class="px-2 py-0.5 text-[10px] font-bold rounded bg-teal-500/20 text-teal-300 border border-teal-500/40">Quick</span>` 
+                    : `<span class="px-2 py-0.5 text-[10px] font-bold rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">Full</span>`;
+
+                const createdStr = formatToIndianDateTimeStr(item.createdAt || parseInt(item.id));
+                const updatedStr = formatToIndianDateTimeStr(item.updatedAt || item.createdAt || parseInt(item.id));
+
+                const cardHtml = `
+                    <div class="glass-card rounded-3xl p-5 flex flex-col justify-between transition relative border ${isSelected ? 'border-teal-400 bg-slate-900/70 shadow-teal-950/50' : 'border-slate-700/60'} shadow-xl" id="card-${item.id}">
+                        
+                        <div class="flex justify-between items-start gap-3">
+                            <div class="flex items-center gap-3 min-w-0 flex-1">
+                                ${imagesHtml}
+                                <div class="min-w-0 flex-1">
+                                    <div class="flex items-center gap-1.5 flex-wrap">
+                                        <h3 class="text-base font-bold text-slate-100 tracking-tight break-words">${item.name} <span class="text-teal-400 text-sm font-semibold">(${item.weight || 'N/A'})</span></h3>
+                                        ${badgeHtml}
+                                    </div>
+                                    <p class="text-xs font-mono text-slate-400 mt-0.5 break-all"><i class="fa-solid fa-barcode text-slate-500"></i> ${item.barcode || 'N/A'} ${item.quantity ? `| Qty: <strong>${item.quantity}</strong>` : ''}</p>
+                                </div>
+                            </div>
+                            <div class="flex flex-col items-end gap-2 shrink-0">
+                                <span class="px-2.5 py-0.5 text-xs font-black rounded-full border uppercase tracking-wider ${item.colorClass}">
+                                    ${item.status}
+                                </span>
+                                <div class="flex items-center gap-1.5 bg-slate-900/80 px-2 py-1 rounded-xl border border-slate-700/85">
+                                    <span class="text-[10px] text-teal-300 font-bold uppercase">Select</span>
+                                    <input type="checkbox" ${isSelected ? 'checked' : ''} onchange="toggleProductSelection('${item.id}')" class="w-4 h-4 accent-teal-500 rounded cursor-pointer">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Key Front Dates & Dmart Matrix Summary -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-3 pt-3 border-t border-slate-800/80 text-[11px] font-mono">
+                            <div class="bg-slate-900/50 p-2.5 rounded-xl border border-slate-800 flex flex-col justify-center">
+                                <div class="text-teal-300">Today: <strong class="text-teal-400">${item.metrics.todayStr}</strong></div>
+                                <div class="text-slate-400 mt-1">MFD Date: <strong class="text-slate-200">${item.metrics.rawMfgStr}</strong></div>
+                                <div class="text-slate-400 mt-1">Expiry Date: <strong class="text-slate-200">${item.metrics.rawExpStr}</strong></div>
+                            </div>
+                            <div class="bg-amber-950/20 p-2.5 rounded-xl border border-amber-900/40 flex flex-col justify-center">
+                                <div class="text-amber-300 truncate">Dmart 10% Exp: <strong class="text-amber-400">${item.metrics.dmartExpDateStr}</strong></div>
+                                <div class="text-amber-300 mt-1">Dmart Rem: <strong class="text-amber-400">${item.metrics.dmart10RemDay} Days</strong></div>
+                                <div class="text-teal-300 mt-1">Dmart Self 10%: <strong class="text-teal-400">${item.metrics.dmartSelfLife10RemPct}%</strong></div>
+                            </div>
+                        </div>
+
+                        <!-- Dual Progress Bars Section -->
+                        <div class="mt-3.5 p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-3">
+                            
+                            <!-- Progress Bar 1: Main Shelf Life -->
+                            <div>
+                                <div class="flex justify-between text-[11px] font-semibold text-slate-300 mb-1">
+                                    <span class="flex items-center gap-1"><i class="fa-solid fa-chart-line text-indigo-400"></i> Main Shelf Life %</span>
+                                    <span class="text-indigo-300 font-mono">Comp: ${item.metrics.completePct}% | Rem: ${item.metrics.selfLifePct}%</span>
+                                </div>
+                                <div class="w-full h-3 bg-slate-800 rounded-lg overflow-hidden shadow-inner flex">
+                                    <div class="h-full bg-indigo-500 transition-all duration-500" style="width: ${item.metrics.completePct}%;"></div>
+                                    <div class="h-full bg-teal-400 transition-all duration-500" style="width: ${item.metrics.selfLifePct}%;"></div>
+                                </div>
+                            </div>
+
+                            <!-- Progress Bar 2: Dmart Self Life 10% -->
+                            <div>
+                                <div class="flex justify-between text-[11px] font-semibold text-slate-300 mb-1">
+                                    <span class="flex items-center gap-1"><i class="fa-solid fa-percent text-amber-400"></i> Dmart Self Life 10%</span>
+                                    <span class="text-amber-400 font-mono">Comp: ${item.metrics.dmartSelfLife10CompPct}% | Rem: ${item.metrics.dmartSelfLife10RemPct}%</span>
+                                </div>
+                                <div class="w-full h-3 bg-slate-800 rounded-lg overflow-hidden shadow-inner flex">
+                                    <div class="h-full bg-red-500 transition-all duration-500" style="width: ${item.metrics.dmartSelfLife10CompPct}%;"></div>
+                                    <div class="h-full bg-amber-400 transition-all duration-500" style="width: ${item.metrics.dmartSelfLife10RemPct}%;"></div>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2 pt-1 text-[11px] font-mono text-slate-400 border-t border-slate-800/80">
+                                <div>Remain Day: <strong class="text-slate-200">${item.metrics.remainingDays}Day</strong></div>
+                                <div class="text-right">Dmart 10% Remain: <strong class="text-amber-400">${item.metrics.dmart10RemDay}Day</strong></div>
+                            </div>
+                        </div>
+
+                        <!-- Expanded Excel & Audit Details -->
+                        <div id="expanded-details-${item.id}" class="hidden mt-4 pt-3 border-t border-slate-800 space-y-2 text-xs">
+                            <div class="bg-indigo-950/20 p-3 rounded-xl border border-indigo-900/40 space-y-1.5 font-mono">
+                                <div class="text-[11px] font-bold text-teal-400 uppercase tracking-wider mb-1.5"><i class="fa-solid fa-table mr-1"></i> Exact Excel Formula & Audit Metrics</div>
+                                <div class="flex justify-between border-b border-indigo-900/50 pb-1 mb-1"><span class="text-teal-300 font-bold">Created At:</span><span class="text-teal-300 font-bold">${createdStr}</span></div>
+                                <div class="flex justify-between border-b border-indigo-900/50 pb-1 mb-1"><span class="text-amber-300 font-bold">Last Updated At:</span><span class="text-amber-300 font-bold">${updatedStr}</span></div>
+                                <div class="flex justify-between"><span class="text-slate-400">Today:</span><span class="text-teal-400 font-bold">${item.metrics.todayStr}</span></div>
+                                <div class="flex justify-between"><span class="text-slate-400">MFD Date:</span><span class="text-slate-200">${item.metrics.rawMfgStr}</span></div>
+                                <div class="flex justify-between"><span class="text-slate-400">Expiry Date:</span><span class="text-slate-200">${item.metrics.rawExpStr}</span></div>
+                                ${item.quantity ? `<div class="flex justify-between"><span class="text-slate-400">Quantity:</span><span class="text-teal-300 font-bold">${item.quantity}</span></div>` : ''}
+                                <div class="flex justify-between"><span class="text-slate-400">Total Shelf Life:</span><span class="text-slate-200">${item.metrics.totalShelfLife}</span></div>
+                                <div class="flex justify-between"><span class="text-slate-400">Remaining Days:</span><span class="text-slate-200">${item.metrics.remainingDays}</span></div>
+                                <div class="flex justify-between"><span class="text-slate-400">Self Life %:</span><span class="text-slate-200">Complete: ${item.metrics.completePct}% | Rem: ${item.metrics.selfLifePct}%</span></div>
+                                <div class="flex justify-between"><span class="text-slate-400">10% Dmart Day:</span><span class="text-amber-400">${item.metrics.dmartDay10}</span></div>
+                                <div class="flex justify-between"><span class="text-slate-400">10% Remaining Day:</span><span class="text-amber-400">${item.metrics.dmartRemDay10}</span></div>
+                                <div class="flex justify-between"><span class="text-slate-400">Dmart 10% Expiry Date:</span><span class="text-amber-400">${item.metrics.dmartExpDateStr}</span></div>
+                                <div class="flex justify-between"><span class="text-slate-400">Dmart 10% Remaining Day:</span><span class="text-amber-400">${item.metrics.dmart10RemDay}</span></div>
+                                <div class="flex justify-between border-t border-slate-800 pt-1"><span class="text-teal-300 font-bold">Dmart Self Life 10%:</span><span class="text-teal-400 font-bold">Complete: ${item.metrics.dmartSelfLife10CompPct}% | Rem: ${item.metrics.dmartSelfLife10RemPct}%</span></div>
+                            </div>
+                            ${item.notes ? `<div class="bg-slate-900/90 p-2.5 rounded-xl border border-slate-800 text-slate-300 italic text-[11px]">"${item.notes}"</div>` : ''}
+                        </div>
+
+                        <div class="mt-4 pt-3 border-t border-slate-800 flex justify-between items-center gap-2">
+                            <button onclick="toggleCardExpand('${item.id}')" class="px-2.5 py-2 text-xs rounded-xl border border-slate-700 font-bold text-indigo-400 hover:bg-slate-800 transition flex items-center gap-1">
+                                <i class="fa-solid fa-chart-simple" id="icon-expand-${item.id}"></i> <span id="text-expand-${item.id}">Details</span>
+                            </button>
+                            
+                            <div class="flex items-center gap-1" id="delete-actions-${item.id}">
+                                <button onclick="shareSingleProductWithPhotos('${item.id}')" class="bg-green-600/20 text-green-400 hover:bg-green-600 hover:text-white px-2.5 py-1.5 rounded-xl transition text-xs font-bold flex items-center gap-1">
+                                    <i class="fa-brands fa-whatsapp"></i> Share w/ Ultra-HD Photos
+                                </button>
+                                <button onclick="editProduct('${item.id}')" class="text-slate-400 hover:text-amber-400 p-2 transition text-sm">
+                                    <i class="fa-solid fa-pencil"></i>
+                                </button>
+                                <button onclick="triggerInlineDeleteConfirm('${item.id}')" class="text-slate-400 hover:text-red-400 p-2 transition text-sm">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', cardHtml);
+            });
+            updateSelectionBarUI();
+        }
+
+        function toggleCardExpand(id) {
+            const panel = document.getElementById(`expanded-details-${id}`);
+            const text = document.getElementById(`text-expand-${id}`);
+            if(panel.classList.contains("hidden")) {
+                panel.classList.remove("hidden");
+                text.innerText = "Hide";
+            } else {
+                panel.classList.add("hidden");
+                text.innerText = "Details";
+            }
+        }
+
+        function triggerInlineDeleteConfirm(id) {
+            const container = document.getElementById(`delete-actions-${id}`);
+            container.innerHTML = `
+                <div class="flex items-center gap-1 bg-red-950/80 border border-red-800 p-1 rounded-xl">
+                    <button onclick="executeDeleteProduct('${id}')" class="bg-red-600 hover:bg-red-500 text-white px-2 py-0.5 text-[10px] rounded font-bold">Yes</button>
+                    <button onclick="cancelInlineDelete('${id}')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-0.5 text-[10px] rounded">No</button>
+                </div>
+            `;
+        }
+
+        function cancelInlineDelete(id) { renderDashboard(); }
+        function executeDeleteProduct(id) {
+            products = products.filter(x => x.id !== id);
+            selectedProductIds = selectedProductIds.filter(x => x !== id);
+            saveToBackupStorage();
+            renderDashboard();
+        }
+
+        function setFilter(type) {
+            currentFilter = type;
+            renderDashboard();
+        }
+
+        function startScanner(target = 'full') {
+            activeScannerTarget = target;
+            const container = document.getElementById("scannerContainer");
+            container.classList.remove("hidden");
+            
+            if(html5QrcodeScanner) { try { html5QrcodeScanner.clear(); } catch(e) {} }
+
+            html5QrcodeScanner = new Html5Qrcode("interactiveScanner");
+            html5QrcodeScanner.start(
+                { facingMode: "environment" }, 
+                { fps: 20, qrbox: { width: 220, height: 110 } },
+                (decodedText) => {
+                    const cleaned = decodedText.replace(/[^0-9]/g, '');
+                    if(activeScannerTarget === 'full') {
+                        document.getElementById("formBarcode").value = cleaned;
+                    } else {
+                        document.getElementById("quickBarcode").value = cleaned;
+                    }
+                    stopScanner();
+                    lookupBarcode(cleaned, activeScannerTarget); 
+                }, 
+                (err) => {}
+            ).then(() => {
+                try {
+                    const capabilities = html5QrcodeScanner.getRunningTrackCameraCapabilities();
+                    if (capabilities && capabilities.torch()) {
+                        document.getElementById("torchToggleBtn").classList.remove("hidden");
+                    }
+                } catch(e) {}
+            }).catch((err) => { 
+                container.classList.add("hidden");
+                alert("Camera permission blocked or unavailable.");
+            });
+        }
+
+        function toggleFlashlight() {
+            if (html5QrcodeScanner) {
+                torchEnabled = !torchEnabled;
+                html5QrcodeScanner.applyVideoConstraints({ advanced: [{ torch: torchEnabled }] }).then(() => {
+                    const btn = document.getElementById("torchToggleBtn");
+                    btn.innerHTML = torchEnabled ? '<i class="fa-solid fa-bolt-lightning text-yellow-300"></i> Torch ON' : '<i class="fa-solid fa-bolt"></i> Flashlight';
+                }).catch(err => {});
+            }
+        }
+
+        function stopScanner() {
+            if(html5QrcodeScanner) {
+                html5QrcodeScanner.stop().then(() => {
+                    document.getElementById("scannerContainer").classList.add("hidden");
+                    document.getElementById("torchToggleBtn").classList.add("hidden");
+                    torchEnabled = false;
+                    try { html5QrcodeScanner.clear(); } catch(e){}
+                }).catch(() => { 
+                    document.getElementById("scannerContainer").classList.add("hidden"); 
+                    document.getElementById("torchToggleBtn").classList.add("hidden");
+                });
+            } else {
+                document.getElementById("scannerContainer").classList.add("hidden");
+                document.getElementById("torchToggleBtn").classList.add("hidden");
+            }
+        }
+
+        function generateProductWhatsAppText(item) {
+            const f = computeShelfLifeMetrics(item.mfgDate, item.expDate, item.mode, item.alertDays);
+            const urls = (item.imgUrls && item.imgUrls.length > 0) ? item.imgUrls : (item.imgUrl ? [item.imgUrl] : []);
+            
+            const createdStr = formatToIndianDateTimeStr(item.createdAt || parseInt(item.id));
+            const updatedStr = formatToIndianDateTimeStr(item.updatedAt || item.createdAt || parseInt(item.id));
+
+            let text = `*PRODUCT: ${item.name.toUpperCase()} (${item.weight || 'N/A'})*\n`;
+            if (item.quantity && item.quantity.trim() !== "") {
+                text += `*Quantity:* ${item.quantity}\n`;
+            }
+            text += `*Barcode:* ${item.barcode || 'N/A'}\n`;
+            text += `*Created At:* ${createdStr}\n`;
+            text += `*Last Updated At:* ${updatedStr}\n`;
+            text += `*Today* : ${f.todayStr}\n`;
+            text += `*MFD Date:* ${f.rawMfgStr}\n`;
+            text += `*Expiry Date:* ${f.rawExpStr}\n`;
+            text += `*Total Shelf Life:* ${f.totalShelfLife}\n`;
+            text += `*Remaining Days:* ${f.remainingDays} Days\n\n`;
+            text += `*Self Life %:*\n`;
+            text += `*Complete* : ${f.completePct} % | *Remaining* : ${f.selfLifePct} %\n`;
+            
+            if(urls.length > 0) {
+                text += `*Attached Ultra-HD Photos Count:* ${urls.length}\n`;
+                urls.forEach((u, i) => {
+                    if(!u.startsWith("data:")) {
+                        text += `Photo ${i+1}: ${u}\n`;
+                    }
+                });
+            }
+
+            text += `----------------------------------------\n`;
+            text += `*10% Dmart Expiry*\n`;
+            text += `*Dmart 10% Expiry Date:* ${f.dmartExpDateStr}\n`;
+            text += `*Dmart 10% Reming Day:* ${f.dmart10RemDay} Days\n`;
+            text += `*Dmart Self Life 10%*:\n`;
+            text += `*Complete* : ${f.dmartSelfLife10CompPct} % | *Remaining* : ${f.dmartSelfLife10RemPct} %\n`;
+            return text;
+        }
+
+        async function getBase64FromUrl(url) {
+            if (!url) return null;
+            if (url.startsWith('data:image')) return url;
+            try {
+                const response = await fetch(url, { mode: 'cors' });
+                const blob = await response.blob();
+                return new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => resolve(reader.result);
+                    reader.onerror = () => resolve(null);
+                    reader.readAsDataURL(blob);
+                });
+            } catch (e) {
+                return new Promise((resolve) => {
+                    const img = new Image();
+                    img.crossOrigin = 'Anonymous';
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.width || 4096;
+                        canvas.height = img.height || 4096;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0);
+                        resolve(canvas.toDataURL('image/jpeg', 1.0));
+                    };
+                    img.onerror = () => resolve(null);
+                    img.src = url;
+                });
+            }
+        }
+
+        async function shareSingleProductWithPhotos(id) {
+            const item = products.find(x => x.id === id);
+            if(!item) return;
+
+            let text = `*PRODUCT EXPIRY REPORT*\n`;
+            text += "=============================\n\n";
+            text += generateProductWhatsAppText(item) + "\n";
+            text += "=============================";
+
+            const rawImgs = (item.imgUrls && item.imgUrls.length > 0) ? item.imgUrls : (item.imgUrl ? [item.imgUrl] : []);
+            let filesArray = [];
+
+            for (let i = 0; i < rawImgs.length; i++) {
+                let b64 = await getBase64FromUrl(rawImgs[i]);
+                if (b64) {
+                    try {
+                        let res = await fetch(b64);
+                        let blob = await res.blob();
+                        filesArray.push(new File([blob], `${item.name.replace(/[^a-zA-Z0-9]/g, '_')}_photo_${i+1}.jpg`, { type: 'image/jpeg' }));
+                    } catch(err) {}
+                }
+            }
+
+            if (navigator.canShare && navigator.canShare({ files: filesArray })) {
+                try {
+                    await navigator.share({
+                        files: filesArray,
+                        title: item.name,
+                        text: text
+                    });
+                    return;
+                } catch (e) {}
+            } else if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: item.name,
+                        text: text
+                    });
+                    return;
+                } catch (e) {}
+            }
+
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        async function shareWhatsAppSelectedWithPhotos() {
+            if (selectedProductIds.length === 0) {
+                alert("Please select at least one product to share!");
+                return;
+            }
+            const selectedItems = products.filter(x => selectedProductIds.includes(x.id));
+            
+            let fullText = `*SELECTED EXPIRY DETAILS REPORT*\n`;
+            fullText += "========================================\n\n";
+            
+            selectedItems.forEach((item, index) => {
+                fullText += `*${index + 1}.* ` + generateProductWhatsAppText(item) + "\n";
+                fullText += "========================================\n\n";
+            });
+
+            let filesArray = [];
+            for (let item of selectedItems) {
+                const rawImgs = (item.imgUrls && item.imgUrls.length > 0) ? item.imgUrls : (item.imgUrl ? [item.imgUrl] : []);
+                for (let i = 0; i < rawImgs.length; i++) {
+                    let b64 = await getBase64FromUrl(rawImgs[i]);
+                    if (b64) {
+                        try {
+                            let res = await fetch(b64);
+                            let blob = await res.blob();
+                            filesArray.push(new File([blob], `${item.name.replace(/[^a-zA-Z0-9]/g, '_')}_${i+1}.jpg`, { type: 'image/jpeg' }));
+                        } catch(err) {}
+                    }
+                }
+            }
+
+            if (navigator.canShare && navigator.canShare({ files: filesArray })) {
+                try {
+                    await navigator.share({
+                        files: filesArray,
+                        title: 'Selected Expiry Report',
+                        text: fullText
+                    });
+                    return;
+                } catch (e) {}
+            } else if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: 'Selected Expiry Report',
+                        text: fullText
+                    });
+                    return;
+                } catch (e) {}
+            }
+
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(fullText)}`, '_blank');
+        }
+
+        function shareWhatsAppDirect(mode) {
+            const filteredProducts = products.filter(x => (mode === 'quick' ? x.mode === 'quick' : (x.mode === 'full' || !x.mode)));
+            if(filteredProducts.length === 0) {
+                alert(`No products found in ${mode === 'quick' ? 'Quick Entry' : 'Full Entry'} mode to share on WhatsApp!`);
+                return;
+            }
+            
+            let fullText = `*ALL EXPIRY DETAILS REPORT (${mode.toUpperCase()})*\n`;
+            fullText += "========================================\n\n";
+            
+            filteredProducts.forEach((item, index) => {
+                fullText += `*${index + 1}.* ` + generateProductWhatsAppText(item) + "\n";
+                fullText += "========================================\n\n";
+            });
+            
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(fullText)}`, '_blank');
+        }
+
+        async function downloadPDFDirect(mode) {
+            const filteredProducts = products.filter(x => (mode === 'quick' ? x.mode === 'quick' : (x.mode === 'full' || !x.mode)));
+            generatePDFForItems(filteredProducts, `all expiry details (${mode}).pdf`, mode.toUpperCase());
+        }
+
+        async function downloadPDFSelected() {
+            if (selectedProductIds.length === 0) {
+                alert("Please select at least one product to generate PDF!");
+                return;
+            }
+            const selectedItems = products.filter(x => selectedProductIds.includes(x.id));
+            generatePDFForItems(selectedItems, `selected expiry details.pdf`, "SELECTED ITEMS");
+        }
+
+        async function generatePDFForItems(targetProducts, fileName, reportTitleTag) {
+            if(targetProducts.length === 0) {
+                alert("No products available to generate PDF!");
+                return;
+            }
+
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+                
+                doc.setFontSize(16);
+                doc.setTextColor(15, 23, 42);
+                doc.text("Smart Expiry Tracker Pro - Report", 14, 15);
+                
+                doc.setFontSize(10);
+                doc.setTextColor(100, 116, 139);
+                doc.text(`Report Type: ${reportTitleTag} | Generated Date: ${formatToIndianDateStr(new Date())}`, 14, 22);
+                
+                let tableRows = [];
+                for (let idx = 0; idx < targetProducts.length; idx++) {
+                    const item = targetProducts[idx];
+                    const f = computeShelfLifeMetrics(item.mfgDate, item.expDate, item.mode, item.alertDays);
+                    const rawImgs = (item.imgUrls && item.imgUrls.length > 0) ? item.imgUrls : (item.imgUrl ? [item.imgUrl] : []);
+                    
+                    let base64Imgs = [];
+                    for (let imgUrl of rawImgs) {
+                        const b64 = await getBase64FromUrl(imgUrl);
+                        if (b64) base64Imgs.push(b64);
+                    }
+
+                    tableRows.push({
+                        rowId: idx + 1,
+                        nameStr: item.name + `\n(${item.weight || 'N/A'})`,
+                        barcodeStr: item.barcode || 'N/A',
+                        qtyStr: item.quantity || '',
+                        datesStr: `MFD: ${f.rawMfgStr}\nExp: ${f.rawExpStr}`,
+                        shelfStr: `${f.remainingDays} Days\n(Rem: ${f.selfLifePct}%)`,
+                        dmartStr: `Exp: ${f.dmartExpDateStr}\nRem: ${f.dmart10RemDay}D (${f.dmartSelfLife10RemPct}%)`,
+                        imageDatas: base64Imgs
+                    });
+                }
+
+                doc.autoTable({
+                    startY: 28,
+                    head: [['#', 'Photos', 'Product Name', 'Barcode', 'Qty', 'MFD & Expiry', 'Shelf Life', 'Dmart 10% Matrix']],
+                    body: tableRows.map(r => [r.rowId, '', r.nameStr, r.barcodeStr, r.qtyStr, r.datesStr, r.shelfStr, r.dmartStr]),
+                    theme: 'grid',
+                    headStyles: { fillColor: [30, 41, 59], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 8.5 },
+                    bodyStyles: { fillColor: [255, 255, 255], textColor: [15, 23, 42], fontSize: 8, cellPadding: 3, minCellHeight: 16 },
+                    alternateRowStyles: { fillColor: [248, 250, 252] },
+                    gridLines: { lineColor: [203, 213, 225], lineWidth: 0.1 },
+                    columnStyles: {
+                        0: { cellWidth: 7 },
+                        1: { cellWidth: 26 },
+                        2: { cellWidth: 30 },
+                        3: { cellWidth: 28 },
+                        4: { cellWidth: 10 },
+                        5: { cellWidth: 28 },
+                        6: { cellWidth: 22 },
+                        7: { cellWidth: 39 }
+                    },
+                    didDrawCell: function (data) {
+                        if (data.section === 'body' && data.column.index === 1) {
+                            const rowIndex = data.row.index;
+                            const record = tableRows[rowIndex];
+                            if (record && record.imageDatas && record.imageDatas.length > 0) {
+                                try {
+                                    const imgs = record.imageDatas;
+                                    const dim = 12;
+                                    const spacing = 2;
+                                    let startX = data.cell.x + 1;
+                                    const posY = data.cell.y + (data.cell.height - dim) / 2;
+                                    
+                                    imgs.forEach((imgData, imgIdx) => {
+                                        if (imgIdx < 2) { 
+                                            let imgFormat = 'JPEG';
+                                            if (imgData.includes('image/png')) imgFormat = 'PNG';
+                                            else if (imgData.includes('image/webp')) imgFormat = 'WEBP';
+                                            doc.addImage(imgData, imgFormat, startX, posY, dim, dim);
+                                            startX += dim + spacing;
+                                        }
+                                    });
+                                } catch (e) {}
+                            }
+                        }
+                    }
+                });
+
+                const pdfBlob = doc.output('blob');
+                const pdfFile = new File([pdfBlob], fileName, { type: 'application/pdf' });
+
+                if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+                    try {
+                        await navigator.share({
+                            files: [pdfFile],
+                            title: 'Smart Expiry Report',
+                            text: `Smart Expiry Tracker Report`
+                        });
+                        return;
+                    } catch (shareErr) {}
+                } else if (navigator.share) {
+                    try {
+                        await navigator.share({
+                            title: 'Smart Expiry Report',
+                            text: `Smart Expiry Tracker Report`
+                        });
+                        return;
+                    } catch (e) {}
+                }
+
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(pdfBlob);
+                link.download = fileName;
+                link.click();
+
+            } catch(err) {
+                alert("PDF Generation Error: " + err.message);
+            }
+        }
+
+        function exportData(format, mode) {
+            const filteredProducts = products.filter(x => (mode === 'quick' ? x.mode === 'quick' : (x.mode === 'full' || !x.mode)));
+            generateExcelForItems(filteredProducts, `all expiry details (${mode}).xlsx`);
+        }
+
+        function exportDataSelected(format) {
+            if (selectedProductIds.length === 0) {
+                alert("Please select at least one product to export to Excel!");
+                return;
+            }
+            const selectedItems = products.filter(x => selectedProductIds.includes(x.id));
+            generateExcelForItems(selectedItems, `selected expiry details.xlsx`);
+        }
+
+        function generateExcelForItems(targetProducts, fileName) {
+            if(targetProducts.length === 0) return;
+            
+            const recordsDataset = targetProducts.map(item => {
+                const f = computeShelfLifeMetrics(item.mfgDate, item.expDate, item.mode, item.alertDays);
+                return {
+                    "Description": item.name, 
+                    "Weight": item.weight || "N/A", 
+                    "Barcode": item.barcode || "N/A",
+                    "Quantity": item.quantity || "",
+                    "Created At": formatToIndianDateTimeStr(item.createdAt || parseInt(item.id)),
+                    "Last Updated At": formatToIndianDateTimeStr(item.updatedAt || item.createdAt || parseInt(item.id)),
+                    "Today": f.todayStr,
+                    "MFD Date": f.rawMfgStr, 
+                    "Expiry Date": f.rawExpStr, 
+                    "Total Shelf Life": f.totalShelfLife,
+                    "Remaining Days": f.remainingDays, 
+                    "Self Life Complete %": f.completePct,
+                    "Self Life Rem %": f.selfLifePct,
+                    "10% Dmart Day": f.dmartDay10,
+                    "10% Remaining Day": f.dmartRemDay10,
+                    "Dmart 10% Expiry Date": f.dmartExpDateStr,
+                    "Dmart 10% Remaining Day": f.dmart10RemDay,
+                    "Dmart Self Life 10% Complete %": f.dmartSelfLife10CompPct,
+                    "Dmart Self Life 10% Rem %": f.dmartSelfLife10RemPct
+                };
+            });
+            const worksheet = XLSX.utils.json_to_sheet(recordsDataset);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "expiry details");
+            XLSX.writeFile(workbook, fileName);
+        }
+
+        function registerServiceWorker() {
+            if ('serviceWorker' in navigator) {
+                const swCode = `
+                    const CACHE_NAME = 'expiry-pwa-v38';
+                    self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE_NAME)); });
+                    self.addEventListener('fetch', e => { e.respondWith(fetch(e.request).catch(() => caches.match(e.request))); });
+                `;
+                const blob = new Blob([swCode], { type: 'application/javascript' });
+                navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(() => {});
+            }
+        }
+    </script>
+</body>
+</html>
