@@ -170,20 +170,20 @@
                     <span id="syncStatus" class="text-[10px] bg-slate-800 text-teal-400 px-2 py-1 rounded-full font-mono">DB-Sync Active</span>
                 </div>
 
-                <!-- Upgraded Sleek Laser Barcode Scanner Container -->
+                <!-- Upgraded Larger Sleek Laser Barcode Scanner Container -->
                 <div class="relative w-full rounded-2xl overflow-hidden mb-4 bg-slate-950 hidden border border-teal-500/60 shadow-2xl flex flex-col items-center justify-center p-3" id="scannerContainer">
-                    <div class="w-full max-w-[300px] h-32 relative rounded-xl overflow-hidden border-2 border-teal-400/80 bg-black shadow-[0_0_20px_rgba(45,212,191,0.2)]">
+                    <div class="w-full max-w-[360px] h-52 relative rounded-xl overflow-hidden border-2 border-teal-400/80 bg-black shadow-[0_0_20px_rgba(45,212,191,0.2)]">
                         <div id="interactiveScanner" class="w-full h-full"></div>
                         <!-- Sleek Laser Line & Target Frame -->
                         <div class="scan-line"></div>
                         <div class="absolute inset-2 border border-dashed border-teal-400/35 rounded-lg pointer-events-none"></div>
                     </div>
-                    <div class="flex items-center justify-between w-full max-w-[300px] mt-2.5">
-                        <button id="torchToggleBtn" onclick="toggleFlashlight()" class="bg-amber-600/90 hover:bg-amber-700 text-white px-2.5 py-1 rounded-lg text-[10px] font-bold z-20 flex items-center gap-1 hidden">
+                    <div class="flex items-center justify-between w-full max-w-[360px] mt-2.5">
+                        <button id="torchToggleBtn" onclick="toggleFlashlight()" class="bg-amber-600 hover:bg-amber-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold z-20 flex items-center gap-1.5 shadow">
                             <i class="fa-solid fa-bolt"></i> Flashlight
                         </button>
-                        <span class="text-[10px] text-teal-300 font-mono"><i class="fa-solid fa-barcode"></i> Align Barcode in Slot</span>
-                        <button onclick="stopScanner()" class="bg-red-600/90 hover:bg-red-700 text-white px-3 py-1 rounded-lg text-[10px] font-bold z-20">
+                        <span class="text-[10px] text-teal-300 font-mono hidden sm:inline"><i class="fa-solid fa-barcode"></i> Align Barcode</span>
+                        <button onclick="stopScanner()" class="bg-red-600 hover:bg-red-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold z-20 shadow">
                             <i class="fa-solid fa-xmark mr-1"></i> Close
                         </button>
                     </div>
@@ -365,6 +365,8 @@
                         <select id="sortBy" onchange="handleSortChange()" class="bg-transparent text-slate-200 focus:outline-none font-medium cursor-pointer">
                             <option value="nearest">Expiry Days: Smallest to Largest</option>
                             <option value="furthest">Expiry Days: Largest to Smallest</option>
+                            <option value="dmartNearest">Dmart 10% Expiry: Nearest First</option>
+                            <option value="dmartFurthest">Dmart 10% Expiry: Furthest First</option>
                             <option value="nameAsc">Alphabetical: A to Z</option>
                             <option value="nameDesc">Alphabetical: Z to A</option>
                         </select>
@@ -1329,6 +1331,10 @@
                 processed.sort((a,b) => a.metrics.remainingDays - b.metrics.remainingDays);
             } else if(sortBy === "furthest") {
                 processed.sort((a,b) => b.metrics.remainingDays - a.metrics.remainingDays);
+            } else if(sortBy === "dmartNearest") {
+                processed.sort((a,b) => a.metrics.dmart10RemDay - b.metrics.dmart10RemDay);
+            } else if(sortBy === "dmartFurthest") {
+                processed.sort((a,b) => b.metrics.dmart10RemDay - a.metrics.dmart10RemDay);
             } else if(sortBy === "nameAsc") {
                 processed.sort((a,b) => a.name.localeCompare(b.name));
             } else if(sortBy === "nameDesc") {
@@ -1518,7 +1524,7 @@
             renderDashboard();
         }
 
-        // Upgraded Sleek Laser Barcode Scanner Launcher
+        // Upgraded Larger Laser Barcode Scanner Launcher with Robust Torch Support
         function startScanner(target = 'full') {
             activeScannerTarget = target;
             const container = document.getElementById("scannerContainer");
@@ -1526,11 +1532,11 @@
             
             if(html5QrcodeScanner) { try { html5QrcodeScanner.clear(); } catch(e) {} }
 
-            // Upgraded to a compact, horizontal slim box ideal for barcodes
+            // Larger Scanner Box: width 320, height 130
             html5QrcodeScanner = new Html5Qrcode("interactiveScanner");
             html5QrcodeScanner.start(
                 { facingMode: "environment" }, 
-                { fps: 25, qrbox: { width: 280, height: 75 } },
+                { fps: 25, qrbox: { width: 320, height: 130 } },
                 (decodedText) => {
                     const cleaned = decodedText.replace(/[^0-9]/g, '');
                     if(activeScannerTarget === 'full') {
@@ -1543,12 +1549,9 @@
                 }, 
                 (err) => {}
             ).then(() => {
-                try {
-                    const capabilities = html5QrcodeScanner.getRunningTrackCameraCapabilities();
-                    if (capabilities && capabilities.torch()) {
-                        document.getElementById("torchToggleBtn").classList.remove("hidden");
-                    }
-                } catch(e) {}
+                // Ensure torch button is visible and active
+                const btn = document.getElementById("torchToggleBtn");
+                btn.classList.remove("hidden");
             }).catch((err) => { 
                 container.classList.add("hidden");
                 alert("Camera permission blocked or unavailable.");
@@ -1561,7 +1564,10 @@
                 html5QrcodeScanner.applyVideoConstraints({ advanced: [{ torch: torchEnabled }] }).then(() => {
                     const btn = document.getElementById("torchToggleBtn");
                     btn.innerHTML = torchEnabled ? '<i class="fa-solid fa-bolt-lightning text-yellow-300"></i> Torch ON' : '<i class="fa-solid fa-bolt"></i> Flashlight';
-                }).catch(err => {});
+                }).catch(err => {
+                    torchEnabled = !torchEnabled;
+                    alert("Flashlight / Torch is not supported on this camera/device.");
+                });
             }
         }
 
@@ -1569,16 +1575,17 @@
             if(html5QrcodeScanner) {
                 html5QrcodeScanner.stop().then(() => {
                     document.getElementById("scannerContainer").classList.add("hidden");
-                    document.getElementById("torchToggleBtn").classList.add("hidden");
                     torchEnabled = false;
+                    const btn = document.getElementById("torchToggleBtn");
+                    btn.innerHTML = '<i class="fa-solid fa-bolt"></i> Flashlight';
                     try { html5QrcodeScanner.clear(); } catch(e){}
                 }).catch(() => { 
                     document.getElementById("scannerContainer").classList.add("hidden"); 
-                    document.getElementById("torchToggleBtn").classList.add("hidden");
+                    torchEnabled = false;
                 });
             } else {
                 document.getElementById("scannerContainer").classList.add("hidden");
-                document.getElementById("torchToggleBtn").classList.add("hidden");
+                torchEnabled = false;
             }
         }
 
@@ -1951,7 +1958,7 @@
         function registerServiceWorker() {
             if ('serviceWorker' in navigator) {
                 const swCode = `
-                    const CACHE_NAME = 'expiry-pwa-v40';
+                    const CACHE_NAME = 'expiry-pwa-v41';
                     self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE_NAME)); });
                     self.addEventListener('fetch', e => { e.respondWith(fetch(e.request).catch(() => caches.match(e.request))); });
                 `;
