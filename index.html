@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Expiry Tracker Pro</title>
+    <title>Smart Expiry Tracker Pro - Upgraded Scanner</title>
     
     <!-- Apple Web App Support & Custom Home Screen Icon -->
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -40,13 +40,12 @@
             height: 2px;
             background: linear-gradient(90deg, transparent, #ef4444, transparent);
             position: absolute;
-            animation: scan 2s linear infinite;
+            animation: scan 1.8s ease-in-out infinite alternate;
             z-index: 10;
         }
         @keyframes scan {
-            0% { top: 0%; }
-            50% { top: 100%; }
-            100% { top: 0%; }
+            0% { top: 15%; }
+            100% { top: 85%; }
         }
         .custom-scroll::-webkit-scrollbar {
             height: 6px;
@@ -85,7 +84,7 @@
             <h1 class="text-3xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-teal-400 to-indigo-400 flex items-center gap-2">
                 <i class="fa-solid fa-hourglass-half text-teal-400 text-2xl"></i> Smart Expiry Ledger Pro
             </h1>
-            <p class="text-xs text-slate-400 mt-1">Excel Dmart 10% Formula & Ultra-HD 4K Photo Sharing Hub</p>
+            <p class="text-xs text-slate-400 mt-1">Unlimited IndexedDB Storage & Upgraded Laser Barcode Scanner</p>
         </div>
         
         <div class="flex flex-wrap gap-2 w-full sm:w-auto">
@@ -168,21 +167,23 @@
                     <h2 class="text-lg font-bold text-indigo-300 flex items-center gap-2" id="formHeaderTitle">
                         <i class="fa-solid fa-circle-plus"></i> Full Entry Mode
                     </h2>
-                    <span id="syncStatus" class="text-[10px] bg-slate-800 text-teal-400 px-2 py-1 rounded-full font-mono">Omni-Sync Active</span>
+                    <span id="syncStatus" class="text-[10px] bg-slate-800 text-teal-400 px-2 py-1 rounded-full font-mono">DB-Sync Active</span>
                 </div>
 
-                <!-- Scanner Container Box Area -->
-                <div class="relative w-full rounded-2xl overflow-hidden mb-4 bg-slate-950 hidden border border-indigo-500/50 shadow-inner flex flex-col items-center justify-center p-2" id="scannerContainer">
-                    <div class="w-full max-w-[280px] h-40 relative rounded-xl overflow-hidden border border-red-500/80 bg-black">
+                <!-- Upgraded Sleek Laser Barcode Scanner Container -->
+                <div class="relative w-full rounded-2xl overflow-hidden mb-4 bg-slate-950 hidden border border-teal-500/60 shadow-2xl flex flex-col items-center justify-center p-3" id="scannerContainer">
+                    <div class="w-full max-w-[300px] h-32 relative rounded-xl overflow-hidden border-2 border-teal-400/80 bg-black shadow-[0_0_20px_rgba(45,212,191,0.2)]">
                         <div id="interactiveScanner" class="w-full h-full"></div>
+                        <!-- Sleek Laser Line & Target Frame -->
                         <div class="scan-line"></div>
+                        <div class="absolute inset-2 border border-dashed border-teal-400/35 rounded-lg pointer-events-none"></div>
                     </div>
-                    <div class="flex items-center justify-between w-full max-w-[280px] mt-2">
-                        <button id="torchToggleBtn" onclick="toggleFlashlight()" class="bg-amber-600/80 hover:bg-amber-700 text-white px-2.5 py-1 rounded-lg text-[10px] font-bold z-20 flex items-center gap-1 hidden">
+                    <div class="flex items-center justify-between w-full max-w-[300px] mt-2.5">
+                        <button id="torchToggleBtn" onclick="toggleFlashlight()" class="bg-amber-600/90 hover:bg-amber-700 text-white px-2.5 py-1 rounded-lg text-[10px] font-bold z-20 flex items-center gap-1 hidden">
                             <i class="fa-solid fa-bolt"></i> Flashlight
                         </button>
-                        <span class="text-[10px] text-amber-400 font-mono"><i class="fa-solid fa-barcode"></i> Align Barcode</span>
-                        <button onclick="stopScanner()" class="bg-red-600/80 hover:bg-red-700 text-white px-3 py-1 rounded-lg text-[10px] font-bold z-20">
+                        <span class="text-[10px] text-teal-300 font-mono"><i class="fa-solid fa-barcode"></i> Align Barcode in Slot</span>
+                        <button onclick="stopScanner()" class="bg-red-600/90 hover:bg-red-700 text-white px-3 py-1 rounded-lg text-[10px] font-bold z-20">
                             <i class="fa-solid fa-xmark mr-1"></i> Close
                         </button>
                     </div>
@@ -202,14 +203,14 @@
                                     oninput="handleBarcodeTyping(this.value, 'full')"
                                     class="w-full bg-slate-900/60 border border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:border-indigo-500 font-mono">
                             </div>
-                            <button onclick="startScanner('full')" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 rounded-xl transition flex items-center justify-center">
+                            <button onclick="startScanner('full')" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 rounded-xl transition flex items-center justify-center shadow-lg shadow-indigo-600/30" title="Open Upgraded Scanner">
                                 <i class="fa-solid fa-camera"></i>
                             </button>
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-xs text-slate-400 font-medium mb-1">Product Photos (Ultra-HD 4K Pristine)</label>
+                        <label class="block text-xs text-slate-400 font-medium mb-1">Product Photos (Optimized Ultra-HD)</label>
                         <div class="flex gap-2">
                             <label class="flex-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl px-3 py-2 text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer transition text-slate-300">
                                 <i class="fa-solid fa-images text-indigo-400"></i> Add HD Photos
@@ -224,7 +225,7 @@
 
                     <div id="formImagePreviewContainer" class="hidden space-y-2 bg-slate-900/60 p-2.5 rounded-xl border border-slate-700/80">
                         <div class="flex items-center justify-between text-[11px] text-slate-400 font-medium">
-                            <span>Attached 4K Photos (<span id="photoCountBadge">0</span>) <span class="text-teal-400 font-mono text-[10px] ml-1">← Tap to Zoom/Rotate →</span></span>
+                            <span>Attached Photos (<span id="photoCountBadge">0</span>) <span class="text-teal-400 font-mono text-[10px] ml-1">← Tap to Zoom/Rotate →</span></span>
                             <button onclick="clearAllFormImages('full')" class="text-red-400 hover:text-red-500 text-xs">Remove All</button>
                         </div>
                         <div id="formImagesGrid" class="snap-carousel custom-scroll pb-2"></div>
@@ -299,7 +300,7 @@
                                     oninput="handleBarcodeTyping(this.value, 'quick')"
                                     class="w-full bg-slate-900/60 border border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:border-teal-500 font-mono">
                             </div>
-                            <button onclick="startScanner('quick')" class="bg-teal-600 hover:bg-teal-500 text-white px-4 rounded-xl transition flex items-center justify-center">
+                            <button onclick="startScanner('quick')" class="bg-teal-600 hover:bg-teal-500 text-white px-4 rounded-xl transition flex items-center justify-center shadow-lg shadow-teal-600/30">
                                 <i class="fa-solid fa-camera"></i>
                             </button>
                         </div>
@@ -448,6 +449,74 @@
         let currentGalleryIndex = 0;
         let activeGalleryProductId = null;
 
+        // INDEXEDDB DATABASE ENGINE (For Unlimited Storage of Products & Photos)
+        let db = null;
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open("SmartExpiryProDB", 2);
+                request.onerror = (e) => reject(e);
+                request.onsuccess = (e) => {
+                    db = e.target.result;
+                    resolve(db);
+                };
+                request.onupgradeneeded = (e) => {
+                    const database = e.target.result;
+                    if (!database.objectStoreNames.contains("products")) {
+                        database.createObjectStore("products", { keyPath: "id" });
+                    }
+                };
+            });
+        }
+
+        async function saveToDB() {
+            if (!db) return;
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(["products"], "readwrite");
+                const store = transaction.objectStore("products");
+                store.clear().onsuccess = () => {
+                    products.forEach(item => {
+                        store.put(item);
+                    });
+                    transaction.oncomplete = () => resolve(true);
+                    transaction.onerror = (e) => reject(e);
+                };
+            });
+        }
+
+        async function loadFromDB() {
+            try {
+                await initDB();
+                return new Promise((resolve, reject) => {
+                    const transaction = db.transaction(["products"], "readonly");
+                    const store = transaction.objectStore("products");
+                    const request = store.getAll();
+                    request.onsuccess = () => {
+                        let data = request.result;
+                        if (!data || data.length === 0) {
+                            const oldData = localStorage.getItem("smart_expiry_storage_v10") || localStorage.getItem("smart_expiry_storage_v9") || localStorage.getItem("smart_expiry_storage_v8");
+                            if (oldData) {
+                                try {
+                                    data = JSON.parse(oldData);
+                                    products = data;
+                                    saveToDB();
+                                } catch(err) { products = []; }
+                            } else {
+                                products = [];
+                            }
+                        } else {
+                            products = data;
+                        }
+                        resolve(products);
+                    };
+                    request.onerror = () => reject(request.error);
+                });
+            } catch (err) {
+                const data = localStorage.getItem("smart_expiry_storage_v10");
+                products = data ? JSON.parse(data) : [];
+                return products;
+            }
+        }
+
         function switchWorkspaceMode(mode) {
             currentWorkspaceMode = mode;
             selectedProductIds = [];
@@ -479,14 +548,16 @@
             renderDashboard();
         }
 
-        document.addEventListener("DOMContentLoaded", () => {
+        document.addEventListener("DOMContentLoaded", async () => {
             const savedSort = localStorage.getItem('preferredSortOrder');
             if (savedSort) {
                 const sortByElement = document.getElementById('sortBy');
                 if (sortByElement) sortByElement.value = savedSort;
             }
 
-            loadFromBackupStorage();
+            await loadFromDB();
+            renderDashboard();
+
             setInterval(renderDashboard, 3600000); 
             registerServiceWorker();
 
@@ -498,25 +569,11 @@
                     document.getElementById('quickSuggestionDropdown').classList.add('hidden');
                 }
             });
-        })();
+        });
 
         function handleSortChange() {
             const sortByValue = document.getElementById('sortBy').value;
             localStorage.setItem('preferredSortOrder', sortByValue);
-            renderDashboard();
-        }
-
-        function saveToBackupStorage() {
-            try {
-                localStorage.setItem("smart_expiry_storage_v10", JSON.stringify(products));
-            } catch (e) {
-                alert("Storage limit reached! Please delete old items or backup.");
-            }
-        }
-
-        function loadFromBackupStorage() {
-            const data = localStorage.getItem("smart_expiry_storage_v10") || localStorage.getItem("smart_expiry_storage_v9") || localStorage.getItem("smart_expiry_storage_v8");
-            products = data ? JSON.parse(data) : [];
             renderDashboard();
         }
 
@@ -857,7 +914,7 @@
             }
         }
 
-        // ULTRA-HD 4K CRYSTAL CLEAR PHOTO PROCESSOR (4096px, 100% Quality)
+        // OPTIMIZED PHOTO PROCESSOR
         function processCustomImageUpload(input, target) {
             if (input.files && input.files.length > 0) {
                 let existingUrls = [];
@@ -873,8 +930,8 @@
                         img.src = e.target.result;
                         img.onload = function() {
                             const canvas = document.createElement('canvas');
-                            const MAX_WIDTH = 4096;  // 4K Ultra-HD Width
-                            const MAX_HEIGHT = 4096; // 4K Ultra-HD Height
+                            const MAX_WIDTH = 1200; 
+                            const MAX_HEIGHT = 1200;
                             let width = img.width;
                             let height = img.height;
 
@@ -889,7 +946,7 @@
                             const ctx = canvas.getContext('2d');
                             ctx.drawImage(img, 0, 0, width, height);
                             
-                            const compressedBase64 = canvas.toDataURL('image/jpeg', 1.0); // 100% Ultra-HD Maximum Quality
+                            const compressedBase64 = canvas.toDataURL('image/jpeg', 0.8);
                             existingUrls.push(compressedBase64);
                             filesProcessed++;
 
@@ -926,9 +983,7 @@
                         <img src="${url}" class="w-16 h-16 object-cover rounded-xl border border-indigo-500/50 shadow-md cursor-pointer hover:scale-105 transition" onclick='triggerGalleryModal(${JSON.stringify(urls)}, ${idx}, null)'>
                         <span class="absolute bottom-1 left-1 bg-black/75 text-teal-300 text-[9px] font-mono px-1.5 py-0.5 rounded">${idx + 1}/${urls.length}</span>
                     </div>
-                    <!-- Rotate Button -->
                     <button onclick="rotateFormImage(${idx})" class="absolute -top-1.5 left-1 bg-indigo-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] shadow hover:bg-indigo-500 z-10" title="Rotate 90°"><i class="fa-solid fa-rotate-right"></i></button>
-                    <!-- Remove Button -->
                     <button onclick="removeSingleFormImage(${idx})" class="absolute -top-1.5 -right-1.5 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] shadow hover:bg-red-500 z-10" title="Delete"><i class="fa-solid fa-xmark"></i></button>
                 `;
                 grid.appendChild(itemDiv);
@@ -950,7 +1005,7 @@
                     ctx.rotate(90 * Math.PI / 180);
                     ctx.drawImage(img, -img.width / 2, -img.height / 2);
                     
-                    urls[index] = canvas.toDataURL('image/jpeg', 1.0);
+                    urls[index] = canvas.toDataURL('image/jpeg', 0.8);
                     document.getElementById("formProductImgUrls").value = JSON.stringify(urls);
                     renderFormImagePreviews(urls);
                 };
@@ -972,7 +1027,6 @@
             renderFormImagePreviews([]);
         }
 
-        // Advanced Interactive Gallery Modal Engine with Rotate Support
         function triggerGalleryModal(urls, index = 0, productId = null) {
             if(!urls || urls.length === 0) return;
             activeGalleryImages = [...urls];
@@ -1010,12 +1064,11 @@
             }
         }
 
-        // Rotate Image inside Zoom / Gallery Modal and save everywhere at 100% Ultra-HD quality
-        function rotateGalleryImage() {
+        async function rotateGalleryImage() {
             if(activeGalleryImages.length === 0) return;
             const imgUrl = activeGalleryImages[currentGalleryIndex];
             const img = new Image();
-            img.onload = function() {
+            img.onload = async function() {
                 const canvas = document.createElement('canvas');
                 canvas.width = img.height;
                 canvas.height = img.width;
@@ -1025,7 +1078,7 @@
                 ctx.rotate(90 * Math.PI / 180);
                 ctx.drawImage(img, -img.width / 2, -img.height / 2);
                 
-                const rotatedBase64 = canvas.toDataURL('image/jpeg', 1.0);
+                const rotatedBase64 = canvas.toDataURL('image/jpeg', 0.8);
                 activeGalleryImages[currentGalleryIndex] = rotatedBase64;
                 updateGalleryModalView();
 
@@ -1038,7 +1091,7 @@
                             prod.imgUrl = rotatedBase64;
                         }
                         prod.updatedAt = new Date().toISOString();
-                        saveToBackupStorage();
+                        await saveToDB();
                         renderDashboard();
                     }
                 } else {
@@ -1059,7 +1112,7 @@
             document.getElementById("zoomModal").classList.add("hidden");
         }
 
-        function saveProduct(mode = 'full') {
+        async function saveProduct(mode = 'full') {
             let record = {};
             const currentTimestamp = new Date().toISOString();
             
@@ -1126,7 +1179,7 @@
                 resetEntryFormFields('quick');
             }
 
-            saveToBackupStorage();
+            await saveToDB();
             renderDashboard();
         }
 
@@ -1356,8 +1409,6 @@
 
                         <!-- Dual Progress Bars Section -->
                         <div class="mt-3.5 p-3.5 rounded-2xl bg-slate-900/60 border border-slate-800 space-y-3">
-                            
-                            <!-- Progress Bar 1: Main Shelf Life -->
                             <div>
                                 <div class="flex justify-between text-[11px] font-semibold text-slate-300 mb-1">
                                     <span class="flex items-center gap-1"><i class="fa-solid fa-chart-line text-indigo-400"></i> Main Shelf Life %</span>
@@ -1369,7 +1420,6 @@
                                 </div>
                             </div>
 
-                            <!-- Progress Bar 2: Dmart Self Life 10% -->
                             <div>
                                 <div class="flex justify-between text-[11px] font-semibold text-slate-300 mb-1">
                                     <span class="flex items-center gap-1"><i class="fa-solid fa-percent text-amber-400"></i> Dmart Self Life 10%</span>
@@ -1456,10 +1506,10 @@
         }
 
         function cancelInlineDelete(id) { renderDashboard(); }
-        function executeDeleteProduct(id) {
+        async function executeDeleteProduct(id) {
             products = products.filter(x => x.id !== id);
             selectedProductIds = selectedProductIds.filter(x => x !== id);
-            saveToBackupStorage();
+            await saveToDB();
             renderDashboard();
         }
 
@@ -1468,6 +1518,7 @@
             renderDashboard();
         }
 
+        // Upgraded Sleek Laser Barcode Scanner Launcher
         function startScanner(target = 'full') {
             activeScannerTarget = target;
             const container = document.getElementById("scannerContainer");
@@ -1475,10 +1526,11 @@
             
             if(html5QrcodeScanner) { try { html5QrcodeScanner.clear(); } catch(e) {} }
 
+            // Upgraded to a compact, horizontal slim box ideal for barcodes
             html5QrcodeScanner = new Html5Qrcode("interactiveScanner");
             html5QrcodeScanner.start(
                 { facingMode: "environment" }, 
-                { fps: 20, qrbox: { width: 220, height: 110 } },
+                { fps: 25, qrbox: { width: 280, height: 75 } },
                 (decodedText) => {
                     const cleaned = decodedText.replace(/[^0-9]/g, '');
                     if(activeScannerTarget === 'full') {
@@ -1553,7 +1605,7 @@
             text += `*Complete* : ${f.completePct} % | *Remaining* : ${f.selfLifePct} %\n`;
             
             if(urls.length > 0) {
-                text += `*Attached Ultra-HD Photos Count:* ${urls.length}\n`;
+                text += `*Attached Photos Count:* ${urls.length}\n`;
                 urls.forEach((u, i) => {
                     if(!u.startsWith("data:")) {
                         text += `Photo ${i+1}: ${u}\n`;
@@ -1588,11 +1640,11 @@
                     img.crossOrigin = 'Anonymous';
                     img.onload = function() {
                         const canvas = document.createElement('canvas');
-                        canvas.width = img.width || 4096;
-                        canvas.height = img.height || 4096;
+                        canvas.width = img.width || 1200;
+                        canvas.height = img.height || 1200;
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0);
-                        resolve(canvas.toDataURL('image/jpeg', 1.0));
+                        resolve(canvas.toDataURL('image/jpeg', 0.8));
                     };
                     img.onerror = () => resolve(null);
                     img.src = url;
@@ -1899,7 +1951,7 @@
         function registerServiceWorker() {
             if ('serviceWorker' in navigator) {
                 const swCode = `
-                    const CACHE_NAME = 'expiry-pwa-v38';
+                    const CACHE_NAME = 'expiry-pwa-v40';
                     self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE_NAME)); });
                     self.addEventListener('fetch', e => { e.respondWith(fetch(e.request).catch(() => caches.match(e.request))); });
                 `;
